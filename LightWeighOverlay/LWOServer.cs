@@ -39,6 +39,9 @@ namespace LightWeightOverlay
 
             WebSocket.Start();
 
+            WebServer.ContentRoutes.Add("admin.html", false);
+
+
             var plugins = Directory.GetDirectories("apps");
             var ti = typeof(IApp);
 
@@ -46,7 +49,7 @@ namespace LightWeightOverlay
             {
                 var pFolder = plugin.Replace("apps\\", "");
                 var dllName = Path.GetFullPath(plugin) + "/" + pFolder + ".dll";
-                var dll = Assembly.LoadFile(dllName);
+                var dll = Assembly.LoadFrom(dllName);
 
                 foreach (Type type in dll.GetExportedTypes().Where(x => ti.IsAssignableFrom(x)))
                 {

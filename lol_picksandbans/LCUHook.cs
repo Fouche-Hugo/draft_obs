@@ -26,28 +26,34 @@ namespace lol_picksandbans
         private LWOServer _server;
 
         public  event EventHandler<LeagueEvent> GameFlowChanged;
-        private  readonly TaskCompletionSource<bool> _work = new TaskCompletionSource<bool>(false);
+        //private  readonly TaskCompletionSource<bool> _work = new TaskCompletionSource<bool>(false);
 
-        LeagueClientApi api;
+        public LeagueClientApi currentAPI;
 
         public  async Task ConnectToLeague()
         {
             // Initialize a connection to the league client.
-            api = await LeagueClientApi.ConnectAsync();
+            currentAPI = await LeagueClientApi.ConnectAsync();
             Console.WriteLine("Connected to League!");
 
-            api.EventHandler.Subscribe("/lol-gameflow/v1/gameflow-phase", OnGameFlowChanged);
+            currentAPI.EventHandler.Subscribe("/lol-gameflow/v1/gameflow-phase", OnGameFlowChanged);
 
-            api.EventHandler.Subscribe("/lol-champ-select/v1/session", OnSessionChanged);
+            currentAPI.EventHandler.Subscribe("/lol-champ-select/v1/session", OnSessionChanged);
 
-            api.EventHandler.Subscribe("/lol-gameflow/v1/session", OnGameflowSessionChanged);
+            currentAPI.EventHandler.Subscribe("/lol-gameflow/v1/session", OnGameflowSessionChanged);
 
-            // Wait until work is complete.
-            await _work.Task;
-            Console.WriteLine("Listening to LCU");
+            currentAPI.Disconnected += CurrentAPI_Disconnected;
+
+
         }
 
-         bool unknownSummoners = true;
+        private void CurrentAPI_Disconnected(object sender, EventArgs e)
+        {
+            currentAPI.Disconnected -= CurrentAPI_Disconnected;
+            ConnectToLeague();
+        }
+
+        bool unknownSummoners = true;
 
         private  void OnGameflowSessionChanged(object sender, LeagueEvent e)
         {
@@ -62,7 +68,6 @@ namespace lol_picksandbans
             var msg = new Message() { MessageType = "LoL", Events = new List<Event>() { new GameFlow() { State = result } } };
             ws.SendAsync(Encoding.UTF8.GetBytes(JsonConvert.SerializeObject(msg)));*/
 
-            _work.SetResult(true);
         }
 
         private  void OnGameFlowChanged(object sender, LeagueEvent e)
@@ -72,26 +77,12 @@ namespace lol_picksandbans
 
             //File.WriteAllText($"events/{i++}_gameflow.json", result);
 
-            if (result != "ChampSelect")
-                LastSession = null;
-
             /*var msg = new Message() { MessageType = "LoL", Events = new List<Event>() { new GameFlow() { State = result } } };
             ws.SendAsync(Encoding.UTF8.GetBytes(JsonConvert.SerializeObject(msg)));*/
 
-            _work.SetResult(true);
         }
-
-         Session LastSession = null;
 
          Dictionary<long, Summoner> Summoners = new Dictionary<long, Summoner>();
-
-        private  bool CompareActions(Action a1, Action a2)
-        {
-            if (a2 == null)
-                return true;
-
-            return a1.ChampionId != a2.ChampionId || a1.Completed != a2.Completed || a1.IsInProgress != a2.IsInProgress;
-        }
 
         private  void OnSessionChanged(object sender, LeagueEvent e)
         {
@@ -109,7 +100,7 @@ namespace lol_picksandbans
                 if (p.SummonerId == 0 || Summoners.ContainsKey(p.SummonerId))
                     continue;
 
-                var task = api.RequestHandler.GetJsonResponseAsync(HttpMethod.Get, $"/lol-summoner/v1/summoners/{p.SummonerId}");
+                var task = currentAPI.RequestHandler.GetJsonResponseAsync(HttpMethod.Get, $"/lol-summoner/v1/summoners/{p.SummonerId}");
                 task.Wait();
                 Summoners[p.SummonerId] = Summoner.FromJson(task.Result);
                 newSummoner = true;
