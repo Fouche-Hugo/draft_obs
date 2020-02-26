@@ -182,54 +182,6 @@ namespace LeaguePBPlugin
 
             ws.SendAsync(Encoding.UTF8.GetBytes(JsonConvert.SerializeObject(msg)));
 
-            
-
-
-            /*var msg = new Message() { Events = events, MessageType = "LoL" };
-
-            File.WriteAllText($"events/{i++}_session.json", result);
-
-            var session = Session.FromJson(result);
-
-            foreach(var p in session.MyTeam.Concat(session.TheirTeam))
-            {
-                if (p.SummonerId == 0 || Summoners.ContainsKey(p.SummonerId))
-                    continue;
-
-                var json = await api.RequestHandler.GetJsonResponseAsync(HttpMethod.Get, $"/lol-summoner/v1/summoners/{p.SummonerId}");
-                Summoners[p.SummonerId] = Summoner.FromJson(json);
-            }
-
-            
-            int floatingBans = session.Actions.Length > 0 ? session.Actions.Last().Count(x => x.Type == "ban" && !x.Completed ) : 0;
-            int floatingPicks = session.Actions.Length > 0 ? session.Actions.Last().Count(x => x.Type == "pick" && !x.Completed) : 0;
-
-            for (int i = 0; i < session.Actions.Length; i++)
-            {
-                var actions = session.Actions[i];
-                for(int k = 0; k < actions.Length; k++)
-                {
-                    var newEvent = false;
-                    if (LastSession == null || LastSession.Actions.Length <= i || LastSession.Actions[i].Length <= k)
-                        newEvent = CompareActions(actions[k], null);
-                    else
-                        newEvent = CompareActions(actions[k], LastSession.Actions[i][k]);
-
-                    if (newEvent && (actions[k].Type == "ban" || actions[k].Type == "pick"))
-                        events.Add(ActionToEvent(session, actions[k], floatingBans, floatingPicks));
-                }
-            }
-
-            if (LastSession == null || LastSession.Actions.Length < session.Actions.Length)
-                msg.Events.Add(new Phase() { FloatingBans = floatingBans, FloatingPicks = floatingPicks, PickTurn = session.Actions.Length > 0 ? session.Actions.Last()[0].PickTurn : 0, PhaseCount = session.Actions.Length });
-
-
-            if (events.Count > 0)
-            {
-               
-                await ws.SendAsync(Encoding.UTF8.GetBytes(JsonConvert.SerializeObject(msg)));
-            }*/
-            //LastSession = session;
         }
 
         static WatsonWsClient ws;

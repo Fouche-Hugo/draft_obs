@@ -3,11 +3,13 @@ Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio Version 16
 VisualStudioVersion = 16.0.29102.190
 MinimumVisualStudioVersion = 10.0.40219.1
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "LightWeightOverlay", "LightWeighOverlay\LightWeightOverlay.csproj", "{63EBB58A-BC51-408A-B268-2E15B97EC943}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "LightWeightOverlay", "LightWeighOverlay\LightWeightOverlay.csproj", "{63EBB58A-BC51-408A-B268-2E15B97EC943}"
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "LCUSharp", "LCUSharp\LCUSharp.csproj", "{1401A99B-6053-4501-B930-C08F07497483}"
 EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "LeaguePBPlugin", "LeaguePBPlugin\LeaguePBPlugin.csproj", "{B7B91CC3-A3ED-4C23-A487-0DDE11076826}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "cache_dragon", "CacheDragon\cache_dragon.csproj", "{F91163E5-F3BA-4E8B-BE69-B2A8DE4F3B20}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "lol_picksandbans", "lol_picksandbans\lol_picksandbans.csproj", "{789017AF-5365-43B5-8562-6FFC4AF51DA7}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -23,10 +25,14 @@ Global
 		{1401A99B-6053-4501-B930-C08F07497483}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{1401A99B-6053-4501-B930-C08F07497483}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{1401A99B-6053-4501-B930-C08F07497483}.Release|Any CPU.Build.0 = Release|Any CPU
-		{B7B91CC3-A3ED-4C23-A487-0DDE11076826}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{B7B91CC3-A3ED-4C23-A487-0DDE11076826}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{B7B91CC3-A3ED-4C23-A487-0DDE11076826}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{B7B91CC3-A3ED-4C23-A487-0DDE11076826}.Release|Any CPU.Build.0 = Release|Any CPU
+		{F91163E5-F3BA-4E8B-BE69-B2A8DE4F3B20}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{F91163E5-F3BA-4E8B-BE69-B2A8DE4F3B20}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{F91163E5-F3BA-4E8B-BE69-B2A8DE4F3B20}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{F91163E5-F3BA-4E8B-BE69-B2A8DE4F3B20}.Release|Any CPU.Build.0 = Release|Any CPU
+		{789017AF-5365-43B5-8562-6FFC4AF51DA7}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{789017AF-5365-43B5-8562-6FFC4AF51DA7}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{789017AF-5365-43B5-8562-6FFC4AF51DA7}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{789017AF-5365-43B5-8562-6FFC4AF51DA7}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
