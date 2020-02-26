@@ -34,7 +34,7 @@ namespace lol_picksandbans
         {
             // Initialize a connection to the league client.
             currentAPI = await LeagueClientApi.ConnectAsync();
-            Console.WriteLine("Connected to League!");
+            Console.WriteLine("Connected to League Client!");
 
             currentAPI.EventHandler.Subscribe("/lol-gameflow/v1/gameflow-phase", OnGameFlowChanged);
 
@@ -49,6 +49,7 @@ namespace lol_picksandbans
 
         private void CurrentAPI_Disconnected(object sender, EventArgs e)
         {
+            Console.WriteLine("Disconnected from League Client!");
             currentAPI.Disconnected -= CurrentAPI_Disconnected;
             ConnectToLeague();
         }
