@@ -15,7 +15,7 @@ namespace LightWeightOverlay
 {
     public class LWOServer
     {
-        public List<IApp> Applications { get; set; } = new List<IApp>();
+        public List<AApplication> Applications { get; set; } = new List<AApplication>();
 
         public Server WebServer { get; set; }
         public WatsonWsServer WebSocket { get; set; }
@@ -23,6 +23,8 @@ namespace LightWeightOverlay
 
         public Dictionary<String, List<String>> Subscriptions { get; set; } = new Dictionary<string, List<string>>();
         public SharedState State { get; set; }
+
+        public String AppDirectory = "apps";
 
         public LWOServer(String settingsPath, String statePath)
         {
@@ -42,18 +44,18 @@ namespace LightWeightOverlay
             WebServer.ContentRoutes.Add("admin.html", false);
 
 
-            var plugins = Directory.GetDirectories("apps");
-            var ti = typeof(IApp);
+            var plugins = Directory.GetDirectories(AppDirectory);
+            var ti = typeof(AApplication);
 
             foreach (var plugin in plugins)
             {
-                var pFolder = plugin.Replace("apps\\", "");
+                var pFolder = plugin.Replace(AppDirectory+"\\", "");
                 var dllName = Path.GetFullPath(plugin) + "/" + pFolder + ".dll";
                 var dll = Assembly.LoadFrom(dllName);
 
                 foreach (Type type in dll.GetExportedTypes().Where(x => ti.IsAssignableFrom(x)))
                 {
-                    IApp c = Activator.CreateInstance(type) as IApp;
+                    AApplication c = Activator.CreateInstance(type) as AApplication;
                     c.Load(this);
                 }
 
@@ -83,6 +85,20 @@ namespace LightWeightOverlay
             Subscriptions[subscription].Add(client);
         }
 
+        public async Task Broadcast(Message msg)
+        {
+            foreach (var k in Subscriptions.Keys)
+            {
+                if (SharedState.ComparePaths(k, msg.Path))
+                {
+                    foreach (var sub in Subscriptions[k])
+                    {
+                        await WebSocket.SendAsync(sub, JsonConvert.SerializeObject(msg));
+                    }
+                }
+            }
+        }
+
         public async Task WsMessageReceived(string ipport, byte[] data)
         {
             var messageAsString = Encoding.UTF8.GetString(data);
@@ -107,17 +123,7 @@ namespace LightWeightOverlay
                     State.Save();
                 }
 
-
-                foreach (var k in Subscriptions.Keys)
-                {
-                    if (SharedState.ComparePaths(k, message.Path))
-                    {
-                        foreach (var sub in Subscriptions[k])
-                        {
-                            await WebSocket.SendAsync(sub, messageAsString);
-                        }
-                    }
-                }
+                await Broadcast(message);
             }
 
         }

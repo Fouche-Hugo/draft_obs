@@ -1,0 +1,6 @@
+{
+  "WebsocketPort": 9346,
+  "WebserverPort": 9345,
+  "IP": "127.0.0.1"
+  
+}

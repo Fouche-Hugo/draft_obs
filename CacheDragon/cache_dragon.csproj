@@ -9,11 +9,31 @@
   </PropertyGroup>
 
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|AnyCPU'">
-    <OutputPath>C:\Users\Felix.Brusch\source\repos\LightWeighOverlay\LightWeighOverlay\bin\Debug\netcoreapp2.1\apps\cache_dragon\</OutputPath>
+    <OutputPath>..\LWOServer\bin\Debug\netcoreapp2.1\apps\cache_dragon\</OutputPath>
   </PropertyGroup>
 
   <ItemGroup>
-    <ProjectReference Include="..\LightWeighOverlay\LightWeightOverlay.csproj" />
+   <Content Include="cache/**">
+        <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>    
   </ItemGroup>
+
+  <ItemGroup>
+    <Compile Remove="cache\cdragon\champion\**" />
+    <Content Remove="cache\cdragon\champion\**" />
+    <EmbeddedResource Remove="cache\cdragon\champion\**" />
+    <None Remove="cache\cdragon\champion\**" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\LightWeightOverlay\LightWeightOverlay.csproj" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <Folder Include="cache\cdragon\" />
+  </ItemGroup>
+
+
+
 
 </Project>

@@ -3,6 +3,7 @@ using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Text;
+using WatsonWebsocket;
 
 namespace LightWeightOverlay
 {
@@ -87,13 +88,15 @@ namespace LightWeightOverlay
             return current;
         }
 
-        public void UpdatePath(String path, object value)
+        public Message UpdatePath(String path, object value, WatsonWsServer broadcast = null)
         {
             var splits = path.Split("/");
             var lastLeg = splits[splits.Length - 1];
             //basically
             var parent = RetrievePath(path, true, true) as IDictionary<string, object>;
             parent[lastLeg] = value;
+
+            return new Message() { Path = path, Content = JsonConvert.SerializeObject(value), Type = "Update" }; ;
         }
 
         public void Save()

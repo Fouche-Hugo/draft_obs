@@ -51,7 +51,7 @@ namespace lol_picksandbans
         {
             Console.WriteLine("Disconnected from League Client!");
             currentAPI.Disconnected -= CurrentAPI_Disconnected;
-            ConnectToLeague();
+            ConnectToLeague().Wait();
         }
 
         bool unknownSummoners = true;
@@ -107,9 +107,10 @@ namespace lol_picksandbans
                 newSummoner = true;
             }
             if (newSummoner)
-                _server.State.UpdatePath("lolChampSelect/summoners", Summoners);
-
-            _server.State.UpdatePath("lolChampSelect/session", JsonHelper.Deserialize(e.Data.ToString()));
+            {
+                _server.Broadcast(_server.State.UpdatePath("lolChampSelect/summoners", Summoners)).Wait();
+            }
+            _server.Broadcast(_server.State.UpdatePath("lolChampSelect/session", JsonHelper.Deserialize(e.Data.ToString()))).Wait();
         }
     }
 }

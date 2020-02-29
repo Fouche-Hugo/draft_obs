@@ -1,0 +1,534 @@
+* {
+    margin: 0;
+    padding: 0;
+} 
+
+@font-face {
+    font-family: 'tgl_0-1451_engschriftregular';
+    src: url('assets/fonts/tgl_0-1451eng-webfont.woff2') format('woff2'),
+         url('assets/fonts/tgl_0-1451eng-webfont.woff') format('woff');
+    font-weight: normal;
+    font-style: normal;
+
+}
+
+header { border:1px black solid; }
+
+body {
+  
+  font-family: 'tgl_0-1451_engschriftregular';
+  font-weight:normal;
+  font-style:normal;  
+  
+  height: 1080px; 
+  width: 1920px;  
+  background-color: rgba(0, 0, 0, 0); 
+  overflow: hidden; 
+}
+
+body *{
+  
+  --team-one-color: rgba(89, 140, 245, 255);
+  --team-two-color: rgba(180, 28, 49, 255);
+  
+  transition: 
+    left 0.75s,
+    right 0.75s,
+    top 0.75s,
+    bottom 0.75s,
+    height 0.75s 0.75s,
+    width 0.75s 0.75s,
+    background-image 1s ease-in-out,
+    font-size 0.75s 0.75s,
+    opacity 0.75s;
+}
+
+#preloader {
+		position: absolute;
+		left: -9999px;
+		top:  -9999px;
+		}
+    
+#preloader img {
+		display: block;
+}
+
+.relative-center{
+  position: relative;
+  transform: translateX(-50%) translateY(-50%);
+  left: 50%;
+  top: 50%;
+}
+
+.absolute-center{
+  position: absolute;
+  transform: translateX(-50%) translateY(-50%);
+  left: 50%;
+  top: 50%;
+}
+
+.phaseinfo{
+  height: calc(100% - 2px);
+  width: calc(1920px - 846px - 846px);
+  float:left;
+  height: 100%;
+  display:flex;
+  flex-direction: column;
+}
+
+.flex-spacer{
+  flex: 1;
+}
+
+.countdown{
+  font-size: 78px;
+  height: 80px;
+    color: white;
+    text-align: center;
+}
+
+.matchinfo{
+  height: 73px;
+}
+
+.timer{
+  color: white;
+  font-size: 100px;
+  text-align:center;
+}
+
+.phase-title{
+  color: black;
+  font-size: 18px;
+  background-color:grey;
+  text-align:center;
+  height: 20px;
+  margin-left: 39px;
+  margin-right: 39px;
+}
+
+.gone .phase-title{
+  opacity: 0;
+  font-size: 0px;
+}
+
+.gone .countdown{
+  opacity: 0;
+  font-size: 0px;
+}
+
+.teaminfo {
+  float:left;
+  height: calc(100% - 2px);
+  width: 846px;
+  top: 1px;
+}
+
+.teaminfo-right{
+  background-color: var(--team-one-color);
+}
+
+.teaminfo-left{
+  background-color: var(--team-two-color);
+}
+
+.teaminfo *{
+  height: 100%;
+}
+
+.teaminfo-left *{
+  float: left;
+}
+
+.teaminfo-right *{
+  float: right;
+}
+
+.teaminfo .logo{
+  width: 485px;
+}
+
+.spacer33{
+  height: 33px;
+}
+
+.teaminfo .name{
+  width: 240px;
+}
+
+.teaminfo .score{
+  width: 120px;
+}
+
+
+
+.left {
+  left: 0%;
+}
+
+.right{
+  right: 0%;
+}
+
+.header.gone {
+  height: 0px;
+}
+
+.header {
+  left: 0%;
+  top: 0%;
+  height: 175px;
+  width: 1920px;
+  background-color: black;
+}
+
+.picks {
+  display: flex;
+  box-sizing: border-box;
+  position: absolute;
+  top: 176px;
+  width: 489px;
+  height: 783px;
+  background-color: rgba(0,0,0,0);
+  flex-direction: column;
+ 
+  transition: 
+    left 0.75s,
+    right 0.75s,
+    top 0.75s, 
+    bottom 0.75s,
+    height 0.75s,
+    width 0.75s,
+    background-image 1s;
+}
+
+.gone.picks.left{
+  left: -50%;
+}
+
+.gone.picks.right{
+  right: -50%;
+}
+
+.gone.bans.left{
+  left: -50%;
+}
+
+.gone.bans.right{
+  right: -50%;
+}
+
+.picks.bottom{
+  top: 360px;
+  transition: 
+    left 0.75s,
+    right 0.75s,
+    height 0.75s,
+    width 0.75s;    
+  
+}
+
+.picks.small-picks{
+  height: 700px;
+}
+
+.picks.truncated-picks{
+  height: 732px;
+}
+
+.pick{
+  box-shadow: inset 0px 0px 1px 1px #00000055;
+  border-style: solid;
+  border-width: 1px;
+  flex: 1;
+
+  transition: 
+    left 0.75s,
+    right 0.75s,
+    top 0.75s, 
+    bottom 0.75s,
+    height 0.75s,
+    width 0.75s,
+    background-image 0.75s,
+    transform 0.1s 0.75s,
+    opacity 0.75s;
+}
+
+.pick .display {
+  height: 100%;
+  width: 100%;
+  
+  transition: 
+    background-color 0.5s ease,
+    opacity 0.75s;
+    
+  border-width: 0px;
+  background-size: 200%;
+  background-image: none;  
+
+}
+
+.right .pick .display {
+  transform: scaleX(-1)
+}
+
+.pick{
+  background-position: 40% 20%;
+}
+
+.pick{
+  background-position: 40% 20%;
+}
+
+.pick.big{
+  height: 207px; 
+}
+
+.bans {
+  position: absolute;
+  width: 960px;
+  height: 135px;
+  top: 198px;
+  
+  transition: 
+    left 0.75s,
+    right 0.75s,
+    top 0.75s,
+    bottom 0.75s,
+    height 0.75s,
+    width 0.75s;    
+}
+
+.bans *{
+  transition: 
+  left 0.75s,
+  right 0.75s,
+  top 0.75s,
+  bottom 0.75s,
+  height 0.75s,
+  width 0.75s,
+  opacity 0.75s;
+  
+}
+
+.bans.bottom {
+  top: 920px;
+}
+
+.bans.top {
+   top: 198px;
+}
+
+.bans.three-big-two-small.right{
+  right: 25px;
+}
+
+.bans.three-big-two-small.left{
+  left: 25px;
+}
+
+.bans.three-small-two-big.right{
+  right: 25px;
+}
+
+.bans.three-small-two-big.left{
+  left: 25px;
+}
+
+.bans.three-big :nth-child(n+1){
+  height: 135px;
+  width: 135px;
+}
+
+.bans.three-big :nth-child(n+4){
+  height: 56px;
+  width: 56px;
+  opacity: 0.0;
+}
+
+.bans.three-big-two-small :nth-child(n+1){
+  height: 135px;
+  width: 135px;
+}
+
+.bans.three-big-two-small :nth-child(n+4){
+  height: 56px;
+  width: 56px;
+}
+
+.bans.three-small-two-big :nth-child(n+1){
+  height: 56px;
+  width: 56px;
+}
+
+.bans.three-small-two-big :nth-child(n+4){
+  height: 135px;
+  width: 135px;
+}
+
+.bans.five-big .ban{
+  height: 135px;
+  width: 135px;
+}
+
+.bans.five-medium.bottom{
+  top: 977px;
+}
+
+.bans.five-medium .ban{
+  height: 69px;
+  width: 69px;
+}
+
+.right.bans {
+ right: 69px
+}
+
+.left.bans{
+ left: 69px
+}
+
+.ban{
+  box-shadow: inset 0px 0px 1px 1px black;
+  background-size: 100% 100%;
+}
+
+.left .ban{
+  float:left;
+  margin-right: 6px;
+}
+
+.right .ban{
+  float:right;
+  margin-right: 6px;
+}
+
+.pick-text{
+  display: none;
+}
+
+.after-initial .pick-text{
+  display: block;
+  color: white;
+  z-index: 1;
+  white-space: nowrap;
+  position: relative;
+  top: 51%;
+  font-size: 40px;  
+  
+  text-shadow: -1px -1px 0 #0000008a, 
+    1px -1px 0 #0000008a,
+    -1px 1px 0 #0000008a,
+    1px 1px 0 #0000008a;
+    
+   
+}
+
+.right .pick-text.after-initial{
+  left: 3%;
+}
+
+.left .pick-text.after-initial{
+  right: 3%;
+}
+.after-initial .pick-champ{
+  font-size: 20px;
+  position: absolute;
+}
+
+.after-initial .pick-player{
+  position: absolute;
+  top: 22px;
+}
+
+.right .after-initial .pick-player{
+  left: 0%;
+}
+
+.left .after-initial .pick-player{
+  right: 0%;
+}
+
+.left .after-initial .pick-champ{
+  right: 3px;
+  top: 5px;
+}
+
+.right .after-initial .pick-champ{
+  left: 3px;
+  top: 5px;
+}
+
+.left .after-initial .pick-text {
+  float:right;
+  right: 3%;
+}
+
+.right .after-initial .pick-text {
+  float:left;
+  left: 3%;
+}
+
+.during-initial .pick-text{
+  display: block;
+  color: white;
+  z-index: 1;
+  white-space: nowrap;
+  position: relative;
+  top: 51%;
+  font-size: 40px;  
+  
+  text-shadow: -1px -1px 0 #0000008a, 
+    1px -1px 0 #0000008a,
+    -1px 1px 0 #0000008a,
+    1px 1px 0 #0000008a;
+}
+
+.pos-icon{
+  opacity: 0;
+  filter: brightness(0%) invert(1);
+}
+
+.left .pos-icon{
+  right: 44px;
+}
+
+.right .pos-icon{
+  left: 44px;
+}
+
+.during-initial .pos-icon{
+  opacity: 1;
+  display: block;
+  position: absolute;
+  top: 10%;
+  height: 50px;
+  width: 50px;
+  z-index: 1;
+  background-size: 100%;
+  transform: translateY(-50%);
+}
+
+.during-initial .pick-champ{
+  display: none;
+}
+
+.left .during-initial .pick-player{
+  position: absolute;
+  right: 127px;
+  transform: translateY(-50%);
+  top: 50%;
+}
+
+.right .during-initial .pick-player{
+  position: absolute;
+  left: 127px;
+  transform: translateY(-50%);
+  top: 50%;
+}
+
+
+
+
+
+

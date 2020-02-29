@@ -9,19 +9,18 @@ using WatsonWebserver;
 
 namespace CacheDragon
 {
-    public class Dragon : IApp
+    public class Dragon : AApplication
     {
-        private LWOServer _server;
 
         private static String _cDragonBaseUrl = "https://cdn.communitydragon.org/latest/";
         private static String path = "/assets/cdragon/";
         private static Regex _cdragonRegex = new Regex($"^{path}");
         //private static Regex _cdragonRegex = new Regex($"^/{path}/");
-        private static async Task CDragonHandler(HttpContext ctx)
+        private async Task CDragonHandler(HttpContext ctx)
         {
             var requested = ctx.Request.RawUrlWithoutQuery.Replace(path, "");
             var url = _cDragonBaseUrl + requested;
-            var cacheUri = "cache/cdragon/" + requested;
+            var cacheUri = Path.Join(GetApplicationPath(),"cache",requested);
 
             Directory.CreateDirectory(Path.GetDirectoryName(cacheUri));
 
@@ -38,7 +37,12 @@ namespace CacheDragon
             return;
         }
 
-        public void Load(LWOServer s)
+        public override string GetName()
+        {
+            return "cache_dragon";
+        }
+
+        public override void Load(LWOServer s)
         {
             _server = s;
             _server.WebServer.DynamicRoutes.Add(HttpMethod.GET, _cdragonRegex, CDragonHandler);
@@ -46,27 +50,27 @@ namespace CacheDragon
             Console.WriteLine("Cache Dragon reachable under " + path);
         }
 
-        public void Start()
+        public override void Start()
         {
             throw new NotImplementedException();
         }
 
-        public string StatusHtml()
+        public override string StatusHtml()
         {
             throw new NotImplementedException();
         }
 
-        public string StatusString()
+        public override string StatusString()
         {
             throw new NotImplementedException();
         }
 
-        public void Stop()
+        public override void Stop()
         {
             throw new NotImplementedException();
         }
 
-        public void Unload()
+        public override void Unload()
         {
             _server.WebServer.DynamicRoutes.Remove(HttpMethod.GET, _cdragonRegex);  
         }

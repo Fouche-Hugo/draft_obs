@@ -6,20 +6,19 @@ using WatsonWebserver;
 
 namespace lol_picksandbans
 {
-    public class PicksAndBans : IApp
+    public class PicksAndBans : AApplication
     {
-        LWOServer _server;
         LCUHook _hook;
 
         SpecialRouteProcessor pbRoute;
 
-        public void Load(LWOServer s)
+        public override void Load(LWOServer s)
         {
 
             _server = s;
             _hook = new LCUHook(_server);
 
-            _hook.ConnectToLeague();
+            _hook.ConnectToLeague().Wait();
 
             pbRoute = new SpecialRouteProcessor("/lol_picksandbans/", "apps/lol_picksandbans/web/");
             pbRoute.AddToWebserver(s.WebServer);
@@ -32,32 +31,36 @@ namespace lol_picksandbans
             return pbRoute.Process(arg);
         }
 
-        public void Start()
+        public override void Start()
         {
             throw new NotImplementedException();
         }
 
-        public string StatusHtml()
+        public override string StatusHtml()
         {
             throw new NotImplementedException();
         }
 
-        public string StatusString()
+        public override string StatusString()
         {
             throw new NotImplementedException();
         }
 
-        public void Stop()
+        public override void Stop()
         {
             throw new NotImplementedException();
         }
 
-        public void Unload()
+        public override void Unload()
         {
             if (_hook.currentAPI != null)
                 _hook.currentAPI.Disconnect();
         }
 
+        public override string GetName()
+        {
+            return "lol_picksandbans";
+        }
 
 
 
