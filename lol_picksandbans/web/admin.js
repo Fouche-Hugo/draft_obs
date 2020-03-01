@@ -54,7 +54,7 @@ socket.addEventListener('message', function (event) {
     } 
     
     if (!settingsDone && message.Path == "lolChampSelect/admin"){
-      settingsDone = true;
+        settingsDone = true;
         LoadTeam("left")
         LoadTeam("right")
     }
@@ -71,7 +71,7 @@ function Main(){
   initDone = true;
 }
 
-function LoadTeam(side){
+function InitTeam(side){
   var teamColor = document.querySelector(".team-"+side+"-color")
   var teamIconFn = document.querySelector(".team-"+side+"-icon-fn")
   var teamImage = document.querySelector(".team-"+side+"-img")
@@ -83,6 +83,15 @@ function LoadTeam(side){
   teamScore.innerHTML = adminData()[side+"TeamScore"]
   teamName.innerHTML = adminData()[side+"TeamName"]
 
+}
+
+function LoadTeam(side){
+  var teamColor = document.querySelector(".team-"+side+"-color")
+  var teamIconFn = document.querySelector(".team-"+side+"-icon-fn")
+  var teamImage = document.querySelector(".team-"+side+"-img")
+  var teamScore = document.querySelector(".team-"+side+"-score")
+  var teamName = document.querySelector(".team-"+side+"-name")
+  
   teamColor.addEventListener('input', function() {
       adminData()[side+"TeamColor"] = teamColor.innerHTML
       document.documentElement.style.setProperty("--team-"+side+"-color", adminData()[side+"TeamColor"]);
@@ -106,6 +115,8 @@ function LoadTeam(side){
   });
 }
 
+LoadTeam("left")
+LoadTeam("right")
 
 
 

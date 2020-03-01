@@ -1,7 +1,20 @@
 {
   "lolChampSelect": {
     "session": {
-      "actions": [],
+      "actions": [
+        [
+          {
+            "actorCellId": 0,
+            "championId": 0,
+            "completed": false,
+            "id": 1,
+            "isAllyAction": true,
+            "isInProgress": true,
+            "pickTurn": 1,
+            "type": "pick"
+          }
+        ]
+      ],
       "allowBattleBoost": false,
       "allowDuplicatePicks": false,
       "allowLockedEvents": false,
@@ -16,8 +29,8 @@
       "benchEnabled": false,
       "boostableSkinCount": 1,
       "chatDetails": {
-        "chatRoomName": "",
-        "chatRoomPassword": null
+        "chatRoomName": "c1~267982c5b842f318543bccf4c08effdf45c48b25@sec.pvp.net",
+        "chatRoomPassword": "HN3LJFiqL0wB9C1p"
       },
       "counter": -1,
       "entitledFeatureState": {
@@ -25,108 +38,47 @@
         "unlockedSkinIds": []
       },
       "hasSimultaneousBans": false,
-      "hasSimultaneousPicks": false,
+      "hasSimultaneousPicks": true,
       "isSpectating": false,
-      "localPlayerCellId": -1,
+      "localPlayerCellId": 0,
       "lockedEventIndex": -1,
-      "myTeam": [],
+      "myTeam": [
+        {
+          "assignedPosition": "",
+          "cellId": 0,
+          "championId": 0,
+          "championPickIntent": 0,
+          "entitledFeatureType": "",
+          "playerType": "PLAYER",
+          "selectedSkinId": 0,
+          "spell1Id": 21,
+          "spell2Id": 12,
+          "summonerId": 19247196,
+          "team": 1,
+          "wardSkinId": -1
+        }
+      ],
       "rerollsRemaining": 0,
       "skipChampionSelect": false,
       "theirTeam": [],
       "timer": {
-        "adjustedTimeLeftInPhase": 0,
-        "adjustedTimeLeftInPhaseInSec": 0,
-        "internalNowInEpochMs": 0,
+        "adjustedTimeLeftInPhase": 89791,
+        "adjustedTimeLeftInPhaseInSec": 89,
+        "internalNowInEpochMs": 1583074306208,
         "isInfinite": false,
-        "phase": "",
-        "timeLeftInPhase": 0,
-        "timeLeftInPhaseInSec": 0,
-        "totalTimeInPhase": 0
+        "phase": "BAN_PICK",
+        "timeLeftInPhase": 92791,
+        "timeLeftInPhaseInSec": 92,
+        "totalTimeInPhase": 92827
       },
       "trades": []
     },
     "summoners": {
-      "53881080": {
-        "accountId": 208733795,
-        "displayName": "Dagka Metal",
-        "internalName": "DagkaMetal",
-        "percentCompleteForNextLevel": 0,
-        "profileIconId": 920,
-        "puuid": "d2b65892-5225-5aec-acbf-3c91d0798246",
-        "rerollPoints": {
-          "currentPoints": 0,
-          "maxRolls": 2,
-          "numberOfRolls": 0,
-          "pointsCostToRoll": 250,
-          "pointsToReroll": 250
-        },
-        "summonerId": 53881080,
-        "summonerLevel": 224,
-        "xpSinceLastLevel": 0,
-        "xpUntilNextLevel": 0
-      },
-      "45883333": {
-        "accountId": 204121459,
-        "displayName": "eXiFFiON",
-        "internalName": "eXiFFiON",
-        "percentCompleteForNextLevel": 0,
-        "profileIconId": 610,
-        "puuid": "9fee1725-bf95-56c3-9031-78c94f79ee77",
-        "rerollPoints": {
-          "currentPoints": 0,
-          "maxRolls": 2,
-          "numberOfRolls": 0,
-          "pointsCostToRoll": 250,
-          "pointsToReroll": 250
-        },
-        "summonerId": 45883333,
-        "summonerLevel": 54,
-        "xpSinceLastLevel": 0,
-        "xpUntilNextLevel": 0
-      },
-      "72402511": {
-        "accountId": 221189230,
-        "displayName": " hectorωtf",
-        "internalName": "hectorωtf",
-        "percentCompleteForNextLevel": 0,
-        "profileIconId": 1111,
-        "puuid": "04c7b204-41a6-531c-895a-76da36ddd3d8",
-        "rerollPoints": {
-          "currentPoints": 0,
-          "maxRolls": 2,
-          "numberOfRolls": 0,
-          "pointsCostToRoll": 250,
-          "pointsToReroll": 250
-        },
-        "summonerId": 72402511,
-        "summonerLevel": 204,
-        "xpSinceLastLevel": 0,
-        "xpUntilNextLevel": 0
-      },
-      "63658130": {
-        "accountId": 214310449,
-        "displayName": "Musrazeor",
-        "internalName": "Musrazeor",
-        "percentCompleteForNextLevel": 0,
-        "profileIconId": 3496,
-        "puuid": "1e4f65d4-b780-5ad3-b293-0dae40b213f2",
-        "rerollPoints": {
-          "currentPoints": 0,
-          "maxRolls": 2,
-          "numberOfRolls": 0,
-          "pointsCostToRoll": 250,
-          "pointsToReroll": 250
-        },
-        "summonerId": 63658130,
-        "summonerLevel": 216,
-        "xpSinceLastLevel": 0,
-        "xpUntilNextLevel": 0
-      },
       "19247196": {
         "accountId": 21909023,
         "displayName": "0118999881999119",
         "internalName": "0118999881999119",
-        "percentCompleteForNextLevel": 92,
+        "percentCompleteForNextLevel": 55,
         "profileIconId": 23,
         "puuid": "349b74b5-a712-5705-a78b-636329e38ad0",
         "rerollPoints": {
@@ -137,770 +89,20 @@
           "pointsToReroll": 0
         },
         "summonerId": 19247196,
-        "summonerLevel": 100,
-        "xpSinceLastLevel": 2403,
-        "xpUntilNextLevel": 2592
-      },
-      "76678692": {
-        "accountId": 222909195,
-        "displayName": "LCS Creaton",
-        "internalName": "LCSCreaton",
-        "percentCompleteForNextLevel": 0,
-        "profileIconId": 3902,
-        "puuid": "b6553f40-f13c-518d-b445-2f3ee7fb87a5",
-        "rerollPoints": {
-          "currentPoints": 0,
-          "maxRolls": 2,
-          "numberOfRolls": 0,
-          "pointsCostToRoll": 250,
-          "pointsToReroll": 250
-        },
-        "summonerId": 76678692,
-        "summonerLevel": 71,
-        "xpSinceLastLevel": 0,
-        "xpUntilNextLevel": 0
-      },
-      "33427272": {
-        "accountId": 36913533,
-        "displayName": "Diamanthai",
-        "internalName": "Diamanthai",
-        "percentCompleteForNextLevel": 0,
-        "profileIconId": 1154,
-        "puuid": "27e0c886-d15d-5232-8b90-12b501ff158b",
-        "rerollPoints": {
-          "currentPoints": 0,
-          "maxRolls": 2,
-          "numberOfRolls": 0,
-          "pointsCostToRoll": 250,
-          "pointsToReroll": 250
-        },
-        "summonerId": 33427272,
-        "summonerLevel": 85,
-        "xpSinceLastLevel": 0,
-        "xpUntilNextLevel": 0
-      },
-      "72558566": {
-        "accountId": 221375593,
-        "displayName": "Sutainomon",
-        "internalName": "Sutainomon",
-        "percentCompleteForNextLevel": 0,
-        "profileIconId": 1627,
-        "puuid": "41dbc20e-89a2-5d0f-bb4e-4701b23b1ff2",
-        "rerollPoints": {
-          "currentPoints": 0,
-          "maxRolls": 2,
-          "numberOfRolls": 0,
-          "pointsCostToRoll": 250,
-          "pointsToReroll": 250
-        },
-        "summonerId": 72558566,
-        "summonerLevel": 76,
-        "xpSinceLastLevel": 0,
-        "xpUntilNextLevel": 0
-      },
-      "135906827": {
-        "accountId": 2338759025078304,
-        "displayName": "Ripperonni",
-        "internalName": "Ripperonni",
-        "percentCompleteForNextLevel": 0,
-        "profileIconId": 6,
-        "puuid": "b694e33e-4041-5814-b6be-1c6d11bbb7a4",
-        "rerollPoints": {
-          "currentPoints": 0,
-          "maxRolls": 2,
-          "numberOfRolls": 0,
-          "pointsCostToRoll": 250,
-          "pointsToReroll": 250
-        },
-        "summonerId": 135906827,
-        "summonerLevel": 35,
-        "xpSinceLastLevel": 0,
-        "xpUntilNextLevel": 0
-      },
-      "98588759": {
-        "accountId": 232440778,
-        "displayName": "Mad Kray",
-        "internalName": "MadKray",
-        "percentCompleteForNextLevel": 0,
-        "profileIconId": 3379,
-        "puuid": "11e2d35b-9797-5686-aeac-81abdd0bbd3d",
-        "rerollPoints": {
-          "currentPoints": 0,
-          "maxRolls": 2,
-          "numberOfRolls": 0,
-          "pointsCostToRoll": 250,
-          "pointsToReroll": 250
-        },
-        "summonerId": 98588759,
-        "summonerLevel": 73,
-        "xpSinceLastLevel": 0,
-        "xpUntilNextLevel": 0
-      },
-      "45099213": {
-        "accountId": 203788578,
-        "displayName": "DumbCannon",
-        "internalName": "DumbCannon",
-        "percentCompleteForNextLevel": 0,
-        "profileIconId": 3583,
-        "puuid": "c24ec5ff-1487-5224-956f-81e40a1e2410",
-        "rerollPoints": {
-          "currentPoints": 0,
-          "maxRolls": 2,
-          "numberOfRolls": 0,
-          "pointsCostToRoll": 250,
-          "pointsToReroll": 250
-        },
-        "summonerId": 45099213,
-        "summonerLevel": 84,
-        "xpSinceLastLevel": 0,
-        "xpUntilNextLevel": 0
-      },
-      "22342807": {
-        "accountId": 26182729,
-        "displayName": "TeKsEiRa",
-        "internalName": "TeKsEiRa",
-        "percentCompleteForNextLevel": 0,
-        "profileIconId": 546,
-        "puuid": "f8f9f489-2651-595e-9038-3aabe5aab2e7",
-        "rerollPoints": {
-          "currentPoints": 0,
-          "maxRolls": 2,
-          "numberOfRolls": 0,
-          "pointsCostToRoll": 250,
-          "pointsToReroll": 250
-        },
-        "summonerId": 22342807,
-        "summonerLevel": 128,
-        "xpSinceLastLevel": 0,
-        "xpUntilNextLevel": 0
-      },
-      "122187396": {
-        "accountId": 2142065524109824,
-        "displayName": "JuissiPurkki123",
-        "internalName": "JuissiPurkki123",
-        "percentCompleteForNextLevel": 0,
-        "profileIconId": 3374,
-        "puuid": "bf0ef828-eff4-52c0-94a7-f67d68fbc6f6",
-        "rerollPoints": {
-          "currentPoints": 0,
-          "maxRolls": 2,
-          "numberOfRolls": 0,
-          "pointsCostToRoll": 250,
-          "pointsToReroll": 250
-        },
-        "summonerId": 122187396,
-        "summonerLevel": 128,
-        "xpSinceLastLevel": 0,
-        "xpUntilNextLevel": 0
-      },
-      "116397167": {
-        "accountId": 2021863626379872,
-        "displayName": "marujawarrior23",
-        "internalName": "marujawarrior23",
-        "percentCompleteForNextLevel": 0,
-        "profileIconId": 4202,
-        "puuid": "e95b682e-33c5-5bf3-874d-34f2e724f6bf",
-        "rerollPoints": {
-          "currentPoints": 0,
-          "maxRolls": 2,
-          "numberOfRolls": 0,
-          "pointsCostToRoll": 250,
-          "pointsToReroll": 250
-        },
-        "summonerId": 116397167,
-        "summonerLevel": 249,
-        "xpSinceLastLevel": 0,
-        "xpUntilNextLevel": 0
-      },
-      "105907885": {
-        "accountId": 238031616,
-        "displayName": "anthoniax",
-        "internalName": "anthoniax",
-        "percentCompleteForNextLevel": 0,
-        "profileIconId": 4358,
-        "puuid": "e0cd29ec-2e39-53a8-b8a5-e88a7e052970",
-        "rerollPoints": {
-          "currentPoints": 0,
-          "maxRolls": 2,
-          "numberOfRolls": 0,
-          "pointsCostToRoll": 250,
-          "pointsToReroll": 250
-        },
-        "summonerId": 105907885,
-        "summonerLevel": 84,
-        "xpSinceLastLevel": 0,
-        "xpUntilNextLevel": 0
-      },
-      "28283400": {
-        "accountId": 32176842,
-        "displayName": "Bojo le clown",
-        "internalName": "Bojoleclown",
-        "percentCompleteForNextLevel": 0,
-        "profileIconId": 714,
-        "puuid": "91f680d1-34cd-5681-8ebd-1033d7ce47da",
-        "rerollPoints": {
-          "currentPoints": 0,
-          "maxRolls": 2,
-          "numberOfRolls": 0,
-          "pointsCostToRoll": 250,
-          "pointsToReroll": 250
-        },
-        "summonerId": 28283400,
-        "summonerLevel": 48,
-        "xpSinceLastLevel": 0,
-        "xpUntilNextLevel": 0
-      },
-      "49022937": {
-        "accountId": 205635356,
-        "displayName": "King Of Woods",
-        "internalName": "KingOfWoods",
-        "percentCompleteForNextLevel": 0,
-        "profileIconId": 4272,
-        "puuid": "685f3a76-c814-5f5f-91f3-f1e6cdb5b147",
-        "rerollPoints": {
-          "currentPoints": 0,
-          "maxRolls": 2,
-          "numberOfRolls": 0,
-          "pointsCostToRoll": 250,
-          "pointsToReroll": 250
-        },
-        "summonerId": 49022937,
-        "summonerLevel": 169,
-        "xpSinceLastLevel": 0,
-        "xpUntilNextLevel": 0
-      },
-      "24594546": {
-        "accountId": 29075718,
-        "displayName": "Fap of Fury",
-        "internalName": "FapofFury",
-        "percentCompleteForNextLevel": 0,
-        "profileIconId": 548,
-        "puuid": "be9c3a77-b0fe-5a86-bb18-6df92d1c0227",
-        "rerollPoints": {
-          "currentPoints": 0,
-          "maxRolls": 2,
-          "numberOfRolls": 0,
-          "pointsCostToRoll": 250,
-          "pointsToReroll": 250
-        },
-        "summonerId": 24594546,
-        "summonerLevel": 161,
-        "xpSinceLastLevel": 0,
-        "xpUntilNextLevel": 0
-      },
-      "138597078": {
-        "accountId": 2382288377639360,
-        "displayName": "Vikxxi",
-        "internalName": "Vikxxi",
-        "percentCompleteForNextLevel": 0,
-        "profileIconId": 23,
-        "puuid": "d74ef900-c1c7-569d-b442-52d1cb0c79d1",
-        "rerollPoints": {
-          "currentPoints": 0,
-          "maxRolls": 2,
-          "numberOfRolls": 0,
-          "pointsCostToRoll": 250,
-          "pointsToReroll": 250
-        },
-        "summonerId": 138597078,
-        "summonerLevel": 30,
-        "xpSinceLastLevel": 0,
-        "xpUntilNextLevel": 0
-      },
-      "86110913": {
-        "accountId": 227553061,
-        "displayName": "GG EasyBro",
-        "internalName": "GGEasyBro",
-        "percentCompleteForNextLevel": 0,
-        "profileIconId": 3379,
-        "puuid": "168f11e5-68c9-585f-b21a-d828b3c0949a",
-        "rerollPoints": {
-          "currentPoints": 0,
-          "maxRolls": 2,
-          "numberOfRolls": 0,
-          "pointsCostToRoll": 250,
-          "pointsToReroll": 250
-        },
-        "summonerId": 86110913,
-        "summonerLevel": 239,
-        "xpSinceLastLevel": 0,
-        "xpUntilNextLevel": 0
-      },
-      "126268207": {
-        "accountId": 2203037930400608,
-        "displayName": "Eh tu callate",
-        "internalName": "Ehtucallate",
-        "percentCompleteForNextLevel": 0,
-        "profileIconId": 4357,
-        "puuid": "42cf4f7a-5b6d-5526-86bf-0cd608042adc",
-        "rerollPoints": {
-          "currentPoints": 0,
-          "maxRolls": 2,
-          "numberOfRolls": 0,
-          "pointsCostToRoll": 250,
-          "pointsToReroll": 250
-        },
-        "summonerId": 126268207,
-        "summonerLevel": 43,
-        "xpSinceLastLevel": 0,
-        "xpUntilNextLevel": 0
-      },
-      "77879240": {
-        "accountId": 223669546,
-        "displayName": "Darth Pinto",
-        "internalName": "DarthPinto",
-        "percentCompleteForNextLevel": 0,
-        "profileIconId": 4241,
-        "puuid": "e994190a-88e9-5f0c-a003-baee0d5dd315",
-        "rerollPoints": {
-          "currentPoints": 0,
-          "maxRolls": 2,
-          "numberOfRolls": 0,
-          "pointsCostToRoll": 250,
-          "pointsToReroll": 250
-        },
-        "summonerId": 77879240,
-        "summonerLevel": 247,
-        "xpSinceLastLevel": 0,
-        "xpUntilNextLevel": 0
-      },
-      "51047459": {
-        "accountId": 206617316,
-        "displayName": "D1zz3H",
-        "internalName": "D1zz3H",
-        "percentCompleteForNextLevel": 0,
-        "profileIconId": 4270,
-        "puuid": "a15bcede-77ad-5d8f-a8b4-bc11035a3f8b",
-        "rerollPoints": {
-          "currentPoints": 0,
-          "maxRolls": 2,
-          "numberOfRolls": 0,
-          "pointsCostToRoll": 250,
-          "pointsToReroll": 250
-        },
-        "summonerId": 51047459,
-        "summonerLevel": 146,
-        "xpSinceLastLevel": 0,
-        "xpUntilNextLevel": 0
-      },
-      "121877471": {
-        "accountId": 2137109790863616,
-        "displayName": "ArviAussmWald",
-        "internalName": "ArviAussmWald",
-        "percentCompleteForNextLevel": 0,
-        "profileIconId": 22,
-        "puuid": "2556ba18-4405-507f-88f5-f19fe9322aa4",
-        "rerollPoints": {
-          "currentPoints": 0,
-          "maxRolls": 2,
-          "numberOfRolls": 0,
-          "pointsCostToRoll": 250,
-          "pointsToReroll": 250
-        },
-        "summonerId": 121877471,
-        "summonerLevel": 70,
-        "xpSinceLastLevel": 0,
-        "xpUntilNextLevel": 0
-      },
-      "88628624": {
-        "accountId": 228616240,
-        "displayName": "IBammBammI",
-        "internalName": "IBammBammI",
-        "percentCompleteForNextLevel": 0,
-        "profileIconId": 683,
-        "puuid": "dd638054-0e47-5c37-893f-de3e602f304b",
-        "rerollPoints": {
-          "currentPoints": 0,
-          "maxRolls": 2,
-          "numberOfRolls": 0,
-          "pointsCostToRoll": 250,
-          "pointsToReroll": 250
-        },
-        "summonerId": 88628624,
-        "summonerLevel": 56,
-        "xpSinceLastLevel": 0,
-        "xpUntilNextLevel": 0
-      },
-      "128211074": {
-        "accountId": 2232964764618816,
-        "displayName": "1V9 Coquillette",
-        "internalName": "1V9Coquillette",
-        "percentCompleteForNextLevel": 0,
-        "profileIconId": 4357,
-        "puuid": "88e584e9-a1a1-56a2-b17e-007fa0745a6f",
-        "rerollPoints": {
-          "currentPoints": 0,
-          "maxRolls": 2,
-          "numberOfRolls": 0,
-          "pointsCostToRoll": 250,
-          "pointsToReroll": 250
-        },
-        "summonerId": 128211074,
-        "summonerLevel": 99,
-        "xpSinceLastLevel": 0,
-        "xpUntilNextLevel": 0
-      },
-      "133837257": {
-        "accountId": 2309242155021024,
-        "displayName": "KeinInternet",
-        "internalName": "KeinInternet",
-        "percentCompleteForNextLevel": 0,
-        "profileIconId": 4363,
-        "puuid": "630fac43-5375-503d-9d4d-116c0f6dc035",
-        "rerollPoints": {
-          "currentPoints": 0,
-          "maxRolls": 2,
-          "numberOfRolls": 0,
-          "pointsCostToRoll": 250,
-          "pointsToReroll": 250
-        },
-        "summonerId": 133837257,
-        "summonerLevel": 30,
-        "xpSinceLastLevel": 0,
-        "xpUntilNextLevel": 0
-      },
-      "27581089": {
-        "accountId": 31483009,
-        "displayName": "AlrightBabyBoy",
-        "internalName": "AlrightBabyBoy",
-        "percentCompleteForNextLevel": 0,
-        "profileIconId": 564,
-        "puuid": "49a40f4d-cbd9-59bd-81f3-a7672c7c65da",
-        "rerollPoints": {
-          "currentPoints": 0,
-          "maxRolls": 2,
-          "numberOfRolls": 0,
-          "pointsCostToRoll": 250,
-          "pointsToReroll": 250
-        },
-        "summonerId": 27581089,
-        "summonerLevel": 40,
-        "xpSinceLastLevel": 0,
-        "xpUntilNextLevel": 0
-      },
-      "66968317": {
-        "accountId": 217714116,
-        "displayName": "huohuo123",
-        "internalName": "huohuo123",
-        "percentCompleteForNextLevel": 0,
-        "profileIconId": 3633,
-        "puuid": "533da57f-21c0-5b65-96d0-08b5a828ba81",
-        "rerollPoints": {
-          "currentPoints": 0,
-          "maxRolls": 2,
-          "numberOfRolls": 0,
-          "pointsCostToRoll": 250,
-          "pointsToReroll": 250
-        },
-        "summonerId": 66968317,
-        "summonerLevel": 118,
-        "xpSinceLastLevel": 0,
-        "xpUntilNextLevel": 0
-      },
-      "23403914": {
-        "accountId": 27555569,
-        "displayName": "4 Rotor rx7",
-        "internalName": "4Rotorrx7",
-        "percentCompleteForNextLevel": 0,
-        "profileIconId": 516,
-        "puuid": "d1beb734-af22-5e55-ac57-fe04854898a8",
-        "rerollPoints": {
-          "currentPoints": 0,
-          "maxRolls": 2,
-          "numberOfRolls": 0,
-          "pointsCostToRoll": 250,
-          "pointsToReroll": 250
-        },
-        "summonerId": 23403914,
-        "summonerLevel": 93,
-        "xpSinceLastLevel": 0,
-        "xpUntilNextLevel": 0
-      },
-      "47350994": {
-        "accountId": 205176090,
-        "displayName": "Ksauces",
-        "internalName": "Ksauces",
-        "percentCompleteForNextLevel": 0,
-        "profileIconId": 608,
-        "puuid": "44ec0411-21f2-59d8-a28b-263f33d4a038",
-        "rerollPoints": {
-          "currentPoints": 0,
-          "maxRolls": 2,
-          "numberOfRolls": 0,
-          "pointsCostToRoll": 250,
-          "pointsToReroll": 250
-        },
-        "summonerId": 47350994,
-        "summonerLevel": 50,
-        "xpSinceLastLevel": 0,
-        "xpUntilNextLevel": 0
-      },
-      "20585858": {
-        "accountId": 23806021,
-        "displayName": "PACAP",
-        "internalName": "PACAP",
-        "percentCompleteForNextLevel": 0,
-        "profileIconId": 2095,
-        "puuid": "08002bf7-b3c7-50d7-b927-79ee89788b23",
-        "rerollPoints": {
-          "currentPoints": 0,
-          "maxRolls": 2,
-          "numberOfRolls": 0,
-          "pointsCostToRoll": 250,
-          "pointsToReroll": 250
-        },
-        "summonerId": 20585858,
         "summonerLevel": 104,
-        "xpSinceLastLevel": 0,
-        "xpUntilNextLevel": 0
-      },
-      "23013246": {
-        "accountId": 27069339,
-        "displayName": "CedzoHD",
-        "internalName": "CedzoHD",
-        "percentCompleteForNextLevel": 0,
-        "profileIconId": 4312,
-        "puuid": "f389eade-78b8-5992-9a32-e556232b9e1c",
-        "rerollPoints": {
-          "currentPoints": 0,
-          "maxRolls": 2,
-          "numberOfRolls": 0,
-          "pointsCostToRoll": 250,
-          "pointsToReroll": 250
-        },
-        "summonerId": 23013246,
-        "summonerLevel": 177,
-        "xpSinceLastLevel": 0,
-        "xpUntilNextLevel": 0
-      },
-      "36068267": {
-        "accountId": 39255368,
-        "displayName": "KitkatBlack",
-        "internalName": "KitkatBlack",
-        "percentCompleteForNextLevel": 0,
-        "profileIconId": 3804,
-        "puuid": "a37629f6-a71c-551b-b5bf-5fdfff27281c",
-        "rerollPoints": {
-          "currentPoints": 0,
-          "maxRolls": 2,
-          "numberOfRolls": 0,
-          "pointsCostToRoll": 250,
-          "pointsToReroll": 250
-        },
-        "summonerId": 36068267,
-        "summonerLevel": 259,
-        "xpSinceLastLevel": 0,
-        "xpUntilNextLevel": 0
-      },
-      "92050650": {
-        "accountId": 229910602,
-        "displayName": "detox1565",
-        "internalName": "detox1565",
-        "percentCompleteForNextLevel": 0,
-        "profileIconId": 1666,
-        "puuid": "6bc4431e-6899-5003-ae55-144f215ff5e5",
-        "rerollPoints": {
-          "currentPoints": 0,
-          "maxRolls": 2,
-          "numberOfRolls": 0,
-          "pointsCostToRoll": 250,
-          "pointsToReroll": 250
-        },
-        "summonerId": 92050650,
-        "summonerLevel": 150,
-        "xpSinceLastLevel": 0,
-        "xpUntilNextLevel": 0
-      },
-      "118238862": {
-        "accountId": 2056566232707392,
-        "displayName": "Emmorie",
-        "internalName": "Emmorie",
-        "percentCompleteForNextLevel": 0,
-        "profileIconId": 1149,
-        "puuid": "2cbf5da4-b22d-5508-a70b-75d77efe3044",
-        "rerollPoints": {
-          "currentPoints": 0,
-          "maxRolls": 2,
-          "numberOfRolls": 0,
-          "pointsCostToRoll": 250,
-          "pointsToReroll": 250
-        },
-        "summonerId": 118238862,
-        "summonerLevel": 105,
-        "xpSinceLastLevel": 0,
-        "xpUntilNextLevel": 0
-      },
-      "53729169": {
-        "accountId": 208663730,
-        "displayName": "kankeli14",
-        "internalName": "kankeli14",
-        "percentCompleteForNextLevel": 0,
-        "profileIconId": 1455,
-        "puuid": "0d5b7f4a-ecd4-53cb-8474-69e6776772e6",
-        "rerollPoints": {
-          "currentPoints": 0,
-          "maxRolls": 2,
-          "numberOfRolls": 0,
-          "pointsCostToRoll": 250,
-          "pointsToReroll": 250
-        },
-        "summonerId": 53729169,
-        "summonerLevel": 89,
-        "xpSinceLastLevel": 0,
-        "xpUntilNextLevel": 0
-      },
-      "69892169": {
-        "accountId": 219660901,
-        "displayName": "Ghostsniper",
-        "internalName": "Ghostsniper",
-        "percentCompleteForNextLevel": 0,
-        "profileIconId": 3458,
-        "puuid": "67e2a36c-a412-5515-abe2-603faa595006",
-        "rerollPoints": {
-          "currentPoints": 0,
-          "maxRolls": 2,
-          "numberOfRolls": 0,
-          "pointsCostToRoll": 250,
-          "pointsToReroll": 250
-        },
-        "summonerId": 69892169,
-        "summonerLevel": 106,
-        "xpSinceLastLevel": 0,
-        "xpUntilNextLevel": 0
-      },
-      "128100089": {
-        "accountId": 2231181701952000,
-        "displayName": "SKADILHO",
-        "internalName": "SKADILHO",
-        "percentCompleteForNextLevel": 0,
-        "profileIconId": 4404,
-        "puuid": "011e3405-e988-501b-bac9-e937b3ea5805",
-        "rerollPoints": {
-          "currentPoints": 0,
-          "maxRolls": 2,
-          "numberOfRolls": 0,
-          "pointsCostToRoll": 250,
-          "pointsToReroll": 250
-        },
-        "summonerId": 128100089,
-        "summonerLevel": 57,
-        "xpSinceLastLevel": 0,
-        "xpUntilNextLevel": 0
-      },
-      "86138778": {
-        "accountId": 227458948,
-        "displayName": "S1NNER",
-        "internalName": "S1NNER",
-        "percentCompleteForNextLevel": 0,
-        "profileIconId": 778,
-        "puuid": "14a33c20-d3cf-58ec-8d66-c20601b13dd8",
-        "rerollPoints": {
-          "currentPoints": 0,
-          "maxRolls": 2,
-          "numberOfRolls": 0,
-          "pointsCostToRoll": 250,
-          "pointsToReroll": 250
-        },
-        "summonerId": 86138778,
-        "summonerLevel": 188,
-        "xpSinceLastLevel": 0,
-        "xpUntilNextLevel": 0
-      },
-      "23688770": {
-        "accountId": 27687225,
-        "displayName": "WSG Yato",
-        "internalName": "WSGYato",
-        "percentCompleteForNextLevel": 0,
-        "profileIconId": 985,
-        "puuid": "c93c63e8-92e9-5920-9513-3761933cbb48",
-        "rerollPoints": {
-          "currentPoints": 0,
-          "maxRolls": 2,
-          "numberOfRolls": 0,
-          "pointsCostToRoll": 250,
-          "pointsToReroll": 250
-        },
-        "summonerId": 23688770,
-        "summonerLevel": 322,
-        "xpSinceLastLevel": 0,
-        "xpUntilNextLevel": 0
-      },
-      "105528566": {
-        "accountId": 237709275,
-        "displayName": "Spacekoalamuaan",
-        "internalName": "Spacekoalamuaan",
-        "percentCompleteForNextLevel": 0,
-        "profileIconId": 3377,
-        "puuid": "ddd8b223-5313-50ef-821d-3d536cde0cda",
-        "rerollPoints": {
-          "currentPoints": 0,
-          "maxRolls": 2,
-          "numberOfRolls": 0,
-          "pointsCostToRoll": 250,
-          "pointsToReroll": 250
-        },
-        "summonerId": 105528566,
-        "summonerLevel": 82,
-        "xpSinceLastLevel": 0,
-        "xpUntilNextLevel": 0
-      },
-      "75878001": {
-        "accountId": 222493955,
-        "displayName": "iExoduzz",
-        "internalName": "iExoduzz",
-        "percentCompleteForNextLevel": 0,
-        "profileIconId": 666,
-        "puuid": "a2bea462-cd59-517e-90eb-c5d061ed37d7",
-        "rerollPoints": {
-          "currentPoints": 0,
-          "maxRolls": 2,
-          "numberOfRolls": 0,
-          "pointsCostToRoll": 250,
-          "pointsToReroll": 250
-        },
-        "summonerId": 75878001,
-        "summonerLevel": 105,
-        "xpSinceLastLevel": 0,
-        "xpUntilNextLevel": 0
-      },
-      "123038132": {
-        "accountId": 2154170692432224,
-        "displayName": "Jungle School",
-        "internalName": "JungleSchool",
-        "percentCompleteForNextLevel": 0,
-        "profileIconId": 25,
-        "puuid": "3703eb2f-7232-55c2-92c7-c153bbdfd049",
-        "rerollPoints": {
-          "currentPoints": 0,
-          "maxRolls": 2,
-          "numberOfRolls": 0,
-          "pointsCostToRoll": 250,
-          "pointsToReroll": 250
-        },
-        "summonerId": 123038132,
-        "summonerLevel": 30,
-        "xpSinceLastLevel": 0,
-        "xpUntilNextLevel": 0
-      },
-      "51568437": {
-        "accountId": 206682987,
-        "displayName": "wheelscompany",
-        "internalName": "wheelscompany",
-        "percentCompleteForNextLevel": 0,
-        "profileIconId": 2092,
-        "puuid": "77ab3ba6-f95d-56c4-80fd-fbfdf9a96512",
-        "rerollPoints": {
-          "currentPoints": 0,
-          "maxRolls": 2,
-          "numberOfRolls": 0,
-          "pointsCostToRoll": 250,
-          "pointsToReroll": 250
-        },
-        "summonerId": 51568437,
-        "summonerLevel": 46,
-        "xpSinceLastLevel": 0,
-        "xpUntilNextLevel": 0
+        "xpSinceLastLevel": 1497,
+        "xpUntilNextLevel": 2688
       }
+    },
+    "admin": {
+      "leftTeamColor": "rgba(180, 28, 49, 255)",
+      "leftTeamName": "Red",
+      "leftTeamScore": "0",
+      "rightTeamName": "Blue",
+      "rightTeamScore": "0",
+      "rightTeamColor": "rgba(89, 140, 245, 255)",
+      "rightTeamIcon": "team-right.png",
+      "leftTeamIcon": "team-left.png"
     }
   },
   "lolChampSelect2": 5,
