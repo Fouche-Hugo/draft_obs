@@ -9,7 +9,7 @@
   </PropertyGroup>
 
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|AnyCPU'">
-    <OutputPath>..\LWOServer\bin\Debug\netcoreapp2.1\apps\cache_dragon\</OutputPath>
+    <OutputPath>..\bin\netcoreapp2.1\apps\cache_dragon</OutputPath>
   </PropertyGroup>
 
   <ItemGroup>

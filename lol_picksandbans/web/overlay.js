@@ -18,6 +18,7 @@ var age = 0;
 
 var phaseTimer = 0;
 
+
 setInterval(function() {
   phaseTimer--
   
@@ -51,6 +52,21 @@ socket.addEventListener('open', function (event) {
     SendMessage("Subscribe","lolChampionData")
 });
 
+function UpdateAdmin(){
+  var adminData =  _S.lolChampSelect.admin;
+  
+  document.querySelector(".teaminfo-left .logo img").src = "assets/teams/"+adminData.leftTeamIcon;
+  document.querySelector(".teaminfo-left .name p").innerHTML = adminData.leftTeamName;
+  document.querySelector(".teaminfo-left .score p").innerHTML = adminData.leftTeamScore;
+  document.documentElement.style.setProperty("--team-left-color", adminData.leftTeamColor);
+  
+  
+  document.querySelector(".teaminfo-right .logo img").src = "assets/teams/"+adminData.rightTeamIcon;
+  document.querySelector(".teaminfo-right .name p").innerHTML = adminData.rightTeamName;
+  document.querySelector(".teaminfo-right .score p").innerHTML = adminData.rightTeamScore;
+  document.documentElement.style.setProperty("--team-right-color", adminData.rightTeamColor);
+}
+
 // Listen for messages
 socket.addEventListener('message', function (event) {
   var message = JSON.parse(event.data);
@@ -60,7 +76,7 @@ socket.addEventListener('message', function (event) {
     var splits = message.Path.split("/")
     var current = _S;
     var _new = JSON.parse(message.Content)
-    //console.log(splits,_new)
+    
     for (var i = 0; i < splits.length-1; i++){
       var leg = splits[i]
       if (!current[leg])
@@ -73,8 +89,10 @@ socket.addEventListener('message', function (event) {
     
     if (!initDone && message.Path == "lolChampionData"){
       Main();
-    } else {
+    } else if (message.Path == "lolChampSelect/session") {
       UpdatePB();
+    } else if (message.Path == "lolChampSelect/admin"){
+      UpdateAdmin()
     }
 
   }
@@ -105,9 +123,6 @@ function SetTimerText(seconds){
   var timer = document.getElementsByClassName("countdown")[0]
   timer.innerHTML = seconds
 }
-
-
-
 
 
 function SetPhaseText(phase){
@@ -173,6 +188,7 @@ function UpdatePhase(newPhase){
       break;
     case "Waiting":
       SetLayout("reset")
+      ResetPicksAndBans();
       break;
     default:
   }
@@ -186,8 +202,26 @@ function UpdateTimer(timer){
 }
 
 function UpdateDisplaySlot(team, slot, collection, action){
-  //console.log(team, slot, action.championId > 0 ? _S.lolChampionData.byId[action.championId].name : "None",action, collection[team][slot])
-  return collection[team][slot].dataContext.update(action);
+
+  var i = 1;
+  var dc = collection[team][slot].dataContext;
+  //Magic to automatically map captains mode
+  while (action != null && (dc.redefined || dc.completed && !action.completed)){
+    dc.redefined = true
+    dc = collection[team][slot+i].dataContext;
+    i++;
+  }
+  
+  return dc.update(action);
+}
+
+function ResetPicksAndBans(){
+  for (var i = 0; i < 5; i++){
+    _S.picks[1][i].dataContext.update(null)
+    _S.picks[2][i].dataContext.update(null)
+    _S.bans[1][i].dataContext.update(null)
+    _S.bans[2][i].dataContext.update(null)
+  }
 }
 
 function UpdatePB(){
@@ -217,14 +251,7 @@ function UpdatePB(){
         var placementTeam = myTeamTeam == lookup.team ? 1 : 2
         var collection = action.type == "ban" ? _S.bans : _S.picks
         UpdateDisplaySlot(placementTeam, lookup.cellId % 5, collection,action);
-        
-        
-        
-        /*if (action.type == "ban"){
-          UpdateDisplaySlot(placementTeam, lookup.cellId % 5, _S.bans,action);
-        } else if (action.type == "pick"){
-          UpdateDisplaySlot(placementTeam, lookup.cellId % 5, _S.picks,action);
-        }*/
+
       }
     }
   } 
@@ -258,8 +285,14 @@ function CreateDiv(classname, innerHTML){
 }
 
 function ValueChanged(context, data, prop){
+  //console.log(context[prop], data == null ? null : data[prop], prop)
+  
+  if (data == null || data[prop] == null)
+    delete context[prop]
+  else
+    context[prop] = data[prop]
+  
   if (prop == "completed" && context.type == "ban" && context[prop] && !data[prop]){
-    console.log("Ban redefinition, setting ban mode to captain ");
   }
 }
 
@@ -269,16 +302,26 @@ function UpdateDataContext(context, data){
   
   if (context.age != age){
     
+    if (!context.dcProperties)
+      context.dcProperties = {}
+    
+    for(var prop in context.dcProperties){
+      if (data == null || data[prop] == null){
+        difference = true;
+        ValueChanged(context, data, prop)
+        delete context.dcProperties[prop]
+      }
+    }
+    
     for(var prop in data){
+      context.dcProperties[prop] = 1
       if (context[prop] != data[prop]){
         difference = true;
         ValueChanged(context, data, prop)
-        context[prop] = data[prop]
       }
     }
     
     context.age = age;
-    
   }
   
   return difference;
@@ -288,54 +331,67 @@ function GetSummonerName(summonerId, cellId){
   var summonerMap = _S.lolChampSelect.summoners;
   
   if (summonerId == 0 || !summonerMap[summonerId])
-    return "Summoner "+cellId;
+    return "Summoner "+(cellId+1);
   
   return summonerMap[summonerId].displayName
 }
-
 function PickOnUpdate(el, data){
-  var player = GetPlayerByCellId(data.actorCellId)
   
-  var champ = champData().byId[data.championId]
   var display = el.querySelector(".display")
   var pickTextElement = el.querySelector(".pick-text")
   var playerName = el.querySelector(".pick-player")
   var champName = el.querySelector(".pick-champ")
   var roleIcon = el.querySelector(".pos-icon")
   
-  playerName.innerHTML = GetSummonerName(player.summonerId, data.actorCellId)
-  champName.innerHTML = champ ? champ.name : "picking..."
-  
-  roleIcon.style.backgroundImage = "url( "+"assets/images/role-"+(player.assignedPosition == "" ?  "fill" : player.assignedPosition)+".png"+" )"
-  
-  if (!champ){
-    if (data.isInProgress){
-      ReplaceStyles(el, "during-initial", Layouts)
-      display.style.backgroundImage = null;
-      
-      display.style.opacity = 0.8
-      
-      if (player.team == 1)
-        display.style.backgroundColor = "var(--team-one-color)"
-      else 
-        display.style.backgroundColor = "var(--team-two-color)"
-    }
+  if (data == null){
+    console.log("Resetting pic")
+    playerName.innerHTML = ""
+    champName.innerHTML = ""
+    roleIcon.style.backgroundImage = null
+    ReplaceStyles(el, "", Layouts)
+    display.style.backgroundColor = null;
+    display.style.backgroundImage = null;
+    display.style.opacity = null;
+  } else {
 
-  } else{
-    ReplaceStyles(el, "after-initial", Layouts)
+    var player = GetPlayerByCellId(data.actorCellId)
     
-    var region = champData().splash.horizontal[champ.id];
-    var url = GenerateSplashArtUrl(champ.id)
+    var champ = champData().byId[data.championId]
     
-    display.style.backgroundImage = "url( "+url+" )"
-    display.style.backgroundPositionX = region.backgroundPositionX;
-    display.style.backgroundPositionY = region.backgroundPositionY;
-    display.style.transform = region.transform;
+    playerName.innerHTML = GetSummonerName(player.summonerId, data.actorCellId)
+    champName.innerHTML = champ ? champ.name : "picking..."
     
-    if (!el.dataContext.completed)
-      display.style.opacity = 0.8;
-    else
-      display.style.opacity = 1.0;
+    roleIcon.style.backgroundImage = "url( "+"assets/roles/role-"+(player.assignedPosition == "" ?  "fill" : player.assignedPosition)+".png"+" )"
+    
+    if (!champ){
+      if (data.isInProgress){
+        ReplaceStyles(el, "during-initial", Layouts)
+        display.style.backgroundImage = null;
+        
+        display.style.opacity = 0.8
+        
+        if (player.team == 1)
+          display.style.backgroundColor = "var(--team-left-color)"
+        else 
+          display.style.backgroundColor = "var(--team-right-color)"
+      }
+
+    } else{
+      ReplaceStyles(el, "after-initial", Layouts)
+      
+      var region = champData().splash.horizontal[champ.id];
+      var url = GenerateSplashArtUrl(champ.id)
+      
+      display.style.backgroundImage = "url( "+url+" )"
+      display.style.backgroundPositionX = region.backgroundPositionX;
+      display.style.backgroundPositionY = region.backgroundPositionY;
+      display.style.transform = region.transform;
+      
+      if (!el.dataContext.completed)
+        display.style.opacity = 0.8;
+      else
+        display.style.opacity = 1.0;
+    }
   }
 }
 
@@ -343,7 +399,7 @@ function CreatePick(_parent){
   var el = CreateDiv("pick","<div class='pick-text'><div class='pos-icon'></div><p class='pick-champ'/><p class='pick-player'/></div><div class='display'></div>")
   _parent.appendChild(el)
   el.dataContext.update = function(data){
-    if (UpdateDataContext(el.dataContext, data)){
+    if (UpdateDataContext(el.dataContext, data) || data == null){
       PickOnUpdate(el, data)
     }
   }  
@@ -354,29 +410,32 @@ function CreateBan(_parent){
   var el = CreateDiv("ban","")
   _parent.appendChild(el)
   el.dataContext.update = function(data){
-    if (UpdateDataContext(el.dataContext, data)){
-      //console.log("ban",el.dataContext)
+    if (UpdateDataContext(el.dataContext, data) || data == null){
      
-      var champ = _S.lolChampionData.byId[data.championId]
-       
-      var player = GetPlayerByCellId(data.actorCellId) 
-       
-      if (!champ){
-        //Log("Newly Active!")
-        
-        if (player.team == 1)
-          el.style.backgroundColor = "var(--team-one-color)"
-        else 
-          el.style.backgroundColor = "var(--team-two-color)"        
-        
-      } else{
-        var url = GenerateSquareArtUrl(champ.id)
-        
-        el.style.backgroundImage = "url( "+url+" )"
-        if (!el.dataContext.completed)
-          el.style.opacity = 0.6;
-        else
-          el.style.opacity = 1.0;
+     if (data == null){
+       el.style.backgroundColor = null;
+       el.style.backgroundImage = null;
+     } else {
+     
+        var champ = _S.lolChampionData.byId[data.championId]
+         
+        var player = GetPlayerByCellId(data.actorCellId) 
+         
+        if (!champ){
+          if (player.team == 1)
+            el.style.backgroundColor = "var(--team-one-color)"
+          else 
+            el.style.backgroundColor = "var(--team-two-color)"        
+          
+        } else{
+          var url = GenerateSquareArtUrl(champ.id)
+          
+          el.style.backgroundImage = "url( "+url+" )"
+          if (!el.dataContext.completed)
+            el.style.opacity = 0.6;
+          else
+            el.style.opacity = 1.0;
+        }
       }
     }
   }
@@ -427,11 +486,13 @@ function SetLayout(type, phase){
 
   if (type == "soloqueue"){
     if (phase == "bans"){
+      SetClassLayout("header","", "", "")
       SetClassLayout("picks","small-picks","bottom", "", 500);
       SetClassLayout("bans","five-big", "top", "gone");
       SetClassLayout("bans","five-big", "top", "", 500);
     } 
     if (phase == "picks"){
+      SetClassLayout("header","", "", "")
       SetClassLayout("bans","five-big", "top", "gone")
       SetClassLayout("bans","five-medium", "bottom", "gone", 500)
       SetClassLayout("bans","five-medium", "bottom", "", 1200)
@@ -462,12 +523,12 @@ function SetLayout(type, phase){
     SetClassLayout("picks","three-big", "top", "gone")
     SetClassLayout("bans","", "", "gone")
     SetClassLayout("header","", "", "gone")
+    
   }
   
 }
 
 //#endregio Dom Manipulation
-
 
 function preloadImage(CreationFunc, id){
   var splashPreloader = new Image();
@@ -501,8 +562,6 @@ function UpdateChampionData(){
     SendMessage("Update",championsById, "lolChampionData/byId")
     SendMessage("Update",championMap, "lolChampionData/byKey")
     SendMessage("Update",championsByIndex, "lolChampionData/byIndex")
-    
-
   })
 }
 
@@ -521,6 +580,7 @@ function Main(){
   
   SendMessage("Subscribe","lolChampSelect/session")
   SendMessage("Subscribe","lolChampSelect/summoners")
+  SendMessage("Subscribe","lolChampSelect/admin")
   initDone = true;
 }
 

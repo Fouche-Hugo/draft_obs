@@ -85,7 +85,7 @@ namespace LightWeightOverlay
             Subscriptions[subscription].Add(client);
         }
 
-        public async Task Broadcast(Message msg)
+        public async Task Broadcast(Message msg, string ipport)
         {
             foreach (var k in Subscriptions.Keys)
             {
@@ -93,7 +93,8 @@ namespace LightWeightOverlay
                 {
                     foreach (var sub in Subscriptions[k])
                     {
-                        await WebSocket.SendAsync(sub, JsonConvert.SerializeObject(msg));
+                        if (sub != ipport)
+                            await WebSocket.SendAsync(sub, JsonConvert.SerializeObject(msg));
                     }
                 }
             }
@@ -123,7 +124,7 @@ namespace LightWeightOverlay
                     State.Save();
                 }
 
-                await Broadcast(message);
+                await Broadcast(message, ipport);
             }
 
         }

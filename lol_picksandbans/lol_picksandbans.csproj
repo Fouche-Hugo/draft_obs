@@ -9,15 +9,10 @@
   </PropertyGroup>
 
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|AnyCPU'">
-    <OutputPath>..\LWOServer\bin\Debug\netcoreapp2.1\apps\lol_picksandbans\</OutputPath>
+    <OutputPath>..\bin\netcoreapp2.1\apps\lol_picksandbans\</OutputPath>
   </PropertyGroup>
 
   <ItemGroup>
-    <PackageReference Include="websocketsharp.core" Version="1.0.0" />
-  </ItemGroup>
-
-  <ItemGroup>
-    <ProjectReference Include="..\LCUSharp\LCUSharp.csproj" />
     <ProjectReference Include="..\LightWeightOverlay\LightWeightOverlay.csproj" />
     <Content Include="web/**">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>

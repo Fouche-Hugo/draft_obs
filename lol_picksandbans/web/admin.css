@@ -1,0 +1,29 @@
+.team-left-icon-fn {
+  font-size: 33px !important;
+  text-align: left !important;
+  margin-left: 25px !important;
+  margin-top: -8px;
+  height: 35px;
+}
+
+.team-right-icon-fn {
+  font-size: 33px !important;
+  text-align: right !important;
+  margin-right: 25px !important;
+  margin-top: -8px;
+  height: 35px;
+}
+
+.team-left-color {
+  font-size: 33px !important;
+  text-align: left !important;
+  margin-left: 25px !important;
+  height: 33px;
+}
+
+.team-right-color {
+  font-size: 33px !important;
+  text-align: right !important;
+  margin-right: 25px !important;
+  height: 33px;
+}

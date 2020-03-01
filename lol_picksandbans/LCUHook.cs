@@ -1,4 +1,5 @@
-﻿using LCUSharp;
+﻿
+using LCUSharp;
 using LCUSharp.Websocket;
 using LightWeightOverlay;
 using LoLApi;
@@ -7,20 +8,20 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Net.Http;
+using System.Reflection;
 using System.Text;
 using System.Threading.Tasks;
 using Action = LoLApi.Action;
 
 namespace lol_picksandbans
 {
+
     public class LCUHook
     {
         public LCUHook(LWOServer s)
         {
             _server = s;
         }
-
-
          int i = 0;
 
         private LWOServer _server;
@@ -30,9 +31,11 @@ namespace lol_picksandbans
 
         public LeagueClientApi currentAPI;
 
+
         public  async Task ConnectToLeague()
         {
             // Initialize a connection to the league client.
+
             currentAPI = await LeagueClientApi.ConnectAsync();
             Console.WriteLine("Connected to League Client!");
 
@@ -42,15 +45,14 @@ namespace lol_picksandbans
 
             currentAPI.EventHandler.Subscribe("/lol-gameflow/v1/session", OnGameflowSessionChanged);
 
-            currentAPI.Disconnected += CurrentAPI_Disconnected;
-
-
+             currentAPI.Disconnected += CurrentAPI_Disconnected;
         }
 
         private void CurrentAPI_Disconnected(object sender, EventArgs e)
         {
             Console.WriteLine("Disconnected from League Client!");
             currentAPI.Disconnected -= CurrentAPI_Disconnected;
+            currentAPI.EventHandler.UnsubscribeAll();
             ConnectToLeague().Wait();
         }
 
@@ -108,9 +110,9 @@ namespace lol_picksandbans
             }
             if (newSummoner)
             {
-                _server.Broadcast(_server.State.UpdatePath("lolChampSelect/summoners", Summoners)).Wait();
+                _server.Broadcast(_server.State.UpdatePath("lolChampSelect/summoners", Summoners),"").Wait();
             }
-            _server.Broadcast(_server.State.UpdatePath("lolChampSelect/session", JsonHelper.Deserialize(e.Data.ToString()))).Wait();
+            _server.Broadcast(_server.State.UpdatePath("lolChampSelect/session", JsonHelper.Deserialize(e.Data.ToString())),"").Wait();
         }
     }
 }
