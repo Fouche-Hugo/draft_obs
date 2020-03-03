@@ -18,7 +18,6 @@ var age = 0;
 
 var phaseTimer = 0;
 
-
 setInterval(function() {
   phaseTimer--
   
@@ -27,7 +26,6 @@ setInterval(function() {
   
   SetTimerText(phaseTimer)
 },1000);
-
 
 function Log(...arr){
   console.log(arr)
@@ -52,10 +50,33 @@ socket.addEventListener('open', function (event) {
     SendMessage("Subscribe","lolChampionData")
 });
 
+var bindings = {}
+
+function defaultValueConverter(binding, value){
+  binding.object[binding.attribute] = value
+  return binding.object[binding.attribute]
+}
+
+function BindElementAttribute(object, attributeName, statePath, setter){
+  if (bindings[statePath] == null)
+    bindings[statePath] = []
+  
+  if (setter == null)
+    setter = defaultValueConverter;
+  
+  var newBinding = {"object" : object, "attribute": attributeName, "path": statePath, "setter" : setter };
+  
+  newBinding.setValue = function(value){
+    setter(newBinding, value)
+  }
+  
+  bindings[statePath].push(newBinding)
+}
+
 function UpdateAdmin(){
   var adminData =  _S.lolChampSelect.admin;
-  
-  document.querySelector(".teaminfo-left .logo img").src = "assets/teams/"+adminData.leftTeamIcon;
+
+  /*document.querySelector(".teaminfo-left .logo img").src = "assets/teams/"+adminData.leftTeamIcon;
   document.querySelector(".teaminfo-left .name p").innerHTML = adminData.leftTeamName;
   document.querySelector(".teaminfo-left .score p").innerHTML = adminData.leftTeamScore;
   document.documentElement.style.setProperty("--team-left-color", adminData.leftTeamColor);
@@ -64,7 +85,24 @@ function UpdateAdmin(){
   document.querySelector(".teaminfo-right .logo img").src = "assets/teams/"+adminData.rightTeamIcon;
   document.querySelector(".teaminfo-right .name p").innerHTML = adminData.rightTeamName;
   document.querySelector(".teaminfo-right .score p").innerHTML = adminData.rightTeamScore;
-  document.documentElement.style.setProperty("--team-right-color", adminData.rightTeamColor);
+  document.documentElement.style.setProperty("--team-right-color", adminData.rightTeamColor);*/
+}
+
+function ResolvePath(_path){
+
+  var splits = _path.split("/")
+  
+  var current = _S;
+    
+  for (var i = 0; i < splits.length-1; i++){
+    var leg = splits[i]
+    if (current[leg] == null){
+      current[leg] = {}
+    }
+    current = current[leg]
+  }
+  
+  return {"object": current, "attribute": splits[splits.length-1], "value": current[splits[splits.length-1]]};
 }
 
 // Listen for messages
@@ -73,19 +111,28 @@ socket.addEventListener('message', function (event) {
   
   if (message.Type == "Update"){
     
-    var splits = message.Path.split("/")
-    var current = _S;
     var _new = JSON.parse(message.Content)
+        
+    var current = ResolvePath(message.Path)
     
-    for (var i = 0; i < splits.length-1; i++){
-      var leg = splits[i]
-      if (!current[leg])
-        current[leg] = {}
-      
-      current = current[leg]
+    var splits = message.Path.split("/")
+    
+    current.object[current.attribute] = _new;
+    
+    for(var path in bindings){
+      for (var i = 0; i < bindings[path].length; i++){
+        var binding = bindings[path][i]
+        if (binding.path.includes(message.Path)){
+          var bound = ResolvePath(binding.path)
+          //console.log(binding.object, binding.attribute, binding.object[binding.attribute])
+          //console.log(bound.object, bound.attribute, bound.value)
+          if (bound != null)
+            binding.setValue(bound.value)
+          else
+            binding.setValue("")
+        }
+      }
     }
-    
-    current[splits[splits.length-1]] = _new;
     
     if (!initDone && message.Path == "lolChampionData"){
       Main();
@@ -256,7 +303,6 @@ function UpdatePB(){
     }
   } 
   
-  
 }
 
 //#region DataContext
@@ -330,11 +376,15 @@ function UpdateDataContext(context, data){
 function GetSummonerName(summonerId, cellId){
   var summonerMap = _S.lolChampSelect.summoners;
   
+  if (summonerMap == null)
+    return "N/A"
+  
   if (summonerId == 0 || !summonerMap[summonerId])
     return "Summoner "+(cellId+1);
   
   return summonerMap[summonerId].displayName
 }
+
 function PickOnUpdate(el, data){
   
   var display = el.querySelector(".display")
@@ -344,7 +394,7 @@ function PickOnUpdate(el, data){
   var roleIcon = el.querySelector(".pos-icon")
   
   if (data == null){
-    console.log("Resetting pic")
+    //console.log("Resetting pic")
     playerName.innerHTML = ""
     champName.innerHTML = ""
     roleIcon.style.backgroundImage = null
@@ -576,8 +626,16 @@ function Main(){
   preloadImage(GenerateSplashArtUrl, 0);
   preloadImage(GenerateSquareArtUrl, 0);
 
-  //SetLayout("soloqueue","picks")
-  
+  BindElementAttribute(document.querySelector(".teaminfo-left .logo img"), "src", "lolChampSelect/admin/leftTeamIcon", (binding, value) => binding.object[binding.attribute] = "assets/teams/"+value )
+  BindElementAttribute(document.querySelector(".teaminfo-left .name p"), "innerHTML", "lolChampSelect/admin/leftTeamName" )
+  BindElementAttribute(document.querySelector(".teaminfo-left .score p"), "innerHTML", "lolChampSelect/admin/leftTeamScore" )
+  BindElementAttribute(document.documentElement.style, "--team-left-color", "lolChampSelect/admin/leftTeamColor", (binding, value) => binding.object.setProperty(binding.attribute, value))
+ 
+  BindElementAttribute(document.querySelector(".teaminfo-right .logo img"), "src", "lolChampSelect/admin/rightTeamIcon", (binding, value) => binding.object[binding.attribute] = "assets/teams/"+value )
+  BindElementAttribute(document.querySelector(".teaminfo-right .name p"), "innerHTML", "lolChampSelect/admin/rightTeamName" )
+  BindElementAttribute(document.querySelector(".teaminfo-right .score p"), "innerHTML", "lolChampSelect/admin/rightTeamScore" )
+  BindElementAttribute(document.documentElement.style, "--team-right-color", "lolChampSelect/admin/rightTeamColor", (binding, value) => binding.object.setProperty(binding.attribute, value))
+ 
   SendMessage("Subscribe","lolChampSelect/session")
   SendMessage("Subscribe","lolChampSelect/summoners")
   SendMessage("Subscribe","lolChampSelect/admin")
