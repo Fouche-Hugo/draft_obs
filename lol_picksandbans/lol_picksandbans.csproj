@@ -1,4 +1,4 @@
-﻿<Project Sdk="Microsoft.NET.Sdk">
+﻿<Project Sdk="Microsoft.NET.Sdk" DefaultTargets="AfterBuild ">
 
   <PropertyGroup>
     <AppendTargetFrameworkToOutputPath>false</AppendTargetFrameworkToOutputPath>
@@ -9,14 +9,17 @@
   </PropertyGroup>
 
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|AnyCPU'">
-    <OutputPath>..\bin\netcoreapp2.1\apps\lol_picksandbans\</OutputPath>
+    <OutputPath>..\bin\apps\lol_picksandbans\</OutputPath>
   </PropertyGroup>
 
   <ItemGroup>
     <ProjectReference Include="..\LightWeightOverlay\LightWeightOverlay.csproj" />
-    <Content Include="web/**">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </Content>
   </ItemGroup>
 
+  <Target Name="MakeLink" AfterTargets="Build">
+    <Exec Command='mklink /j "$(OutputPath)/web" "web"' ContinueOnError="true" />
+  </Target>
+
+
 </Project>
+

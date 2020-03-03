@@ -18,7 +18,7 @@ namespace lol_picksandbans
             _server = s;
             _hook = new LCUHook(_server);
 
-            _hook.ConnectToLeague().Wait();
+            _hook.ConnectToLeague();
 
             pbRoute = new SpecialRouteProcessor("/lol_picksandbans/", "apps/lol_picksandbans/web/");
             pbRoute.AddToWebserver(s.WebServer);
