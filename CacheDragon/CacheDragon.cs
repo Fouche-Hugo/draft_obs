@@ -27,7 +27,16 @@ namespace CacheDragon
             if (!File.Exists(cacheUri))
             {
                 WebClient wc = new WebClient();
-                wc.DownloadFile(url, cacheUri);
+                var uri = Path.GetFullPath(cacheUri);
+                Console.WriteLine(uri);
+                try
+                {
+                    wc.DownloadFile(url, uri);
+                }
+                catch (Exception e)
+                {
+                    Console.WriteLine(e);
+                }
                 Console.WriteLine("Downloaded " + url);
                 wc.Dispose();
             }

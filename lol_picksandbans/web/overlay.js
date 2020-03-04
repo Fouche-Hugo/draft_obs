@@ -11,6 +11,8 @@ var champData = () => _S.lolChampionData
 
 _S.picks = {1: [], 2: []}
 _S.bans = {1: [], 2: []}
+_S.pickElements = {1: [], 2: []}
+_S.banElements = {1: [], 2: []}
 
 var initDone = false;
 
@@ -53,18 +55,18 @@ socket.addEventListener('open', function (event) {
 var bindings = {}
 
 function defaultValueConverter(binding, value){
-  binding.object[binding.attribute] = value
-  return binding.object[binding.attribute]
+  binding.dataContext[binding.attribute] = value
+  return binding.dataContext[binding.attribute]
 }
 
-function BindElementAttribute(object, attributeName, statePath, setter){
+function BindSetter(dataContext, attributeName, statePath, setter){
   if (bindings[statePath] == null)
     bindings[statePath] = []
   
   if (setter == null)
     setter = defaultValueConverter;
   
-  var newBinding = {"object" : object, "attribute": attributeName, "path": statePath, "setter" : setter };
+  var newBinding = {"dataContext" : dataContext, "attribute": attributeName, "path": statePath, "setter" : setter };
   
   newBinding.setValue = function(value){
     setter(newBinding, value)
@@ -95,11 +97,13 @@ function UpdatePath(path, object){
   
   current.object[current.attribute] = object;
   
-  for(var path in bindings){
-    for (var i = 0; i < bindings[path].length; i++){
-      var binding = bindings[path][i]
-      if (binding.path.includes(path)){
+  for(var boundPath in bindings){
+    for (var i = 0; i < bindings[boundPath].length; i++){
+      var binding = bindings[boundPath][i]
+      if (binding.path.includes(boundPath)){
+        
         var bound = ResolvePath(binding.path)
+        
         if (bound != null)
           binding.setValue(bound.value)
         else
@@ -225,27 +229,40 @@ function UpdateTimer(timer){
     phaseTimer = timer.timeLeftInPhaseInSec
 }
 
-function UpdateDisplaySlot(team, slot, collection, action){
-
-  var i = 1;
-  var dc = collection[team][slot].dataContext;
-  //Magic to automatically map captains mode
-  while (action != null && (dc.redefined || dc.completed && !action.completed)){
-    dc.redefined = true
-    dc = collection[team][slot+i].dataContext;
-    i++;
-  }
+function UpdateSlot(slot, action, player){
+  var changedProperties = []
   
-  return dc.update(action);
-}
+  var summonerName = GetSummonerName(player.summonerId, player.cellId)
+  var champName = action.championId > 0 ? champData().byId[action.championId].name : ""
+  var image = action.championId > 0 ? champData().byId[action.championId].id : ""
+  
+  if (slot.summonerName != summonerName)
+    changedProperties.push("summonerName");
+  
+  if (slot.championName != champName)
+    changedProperties.push("championName");
+  
+  if (slot.active != action.isInProgress)
+    changedProperties.push("active");
+  
+  if (slot.finished != action.completed)
+    changedProperties.push("finished");
+  
+  if (slot.team != player.team)
+    changedProperties.push("team");
 
-function ResetPicksAndBans(){
-  for (var i = 0; i < 5; i++){
-    _S.picks[1][i].dataContext.update(null)
-    _S.picks[2][i].dataContext.update(null)
-    _S.bans[1][i].dataContext.update(null)
-    _S.bans[2][i].dataContext.update(null)
-  }
+  if (slot.image != image)
+    changedProperties.push("image");
+  
+  slot.summonerName = summonerName
+  slot.championName = champName
+  slot.active = action.isInProgress
+  slot.finished = action.completed
+  slot.team = player.team
+  slot.image = image
+  
+  return changedProperties;
+
 }
 
 function UpdatePB(){
@@ -260,21 +277,32 @@ function UpdatePB(){
   UpdateTimer(cs.timer)
   UpdatePhase(DeterminePhase(cs.timer ? cs.timer.phase : "", actions))
   
+  var processedCells = []
+ 
   for (var i = actions.length-1; i >= 0; i--){
-    //console.log(actions[i])
     for(var k = 0; k < actions[i].length; k++){  
       var action = actions[i][k];
-
-      var lookup = GetPlayerByCellId(action.actorCellId)
       
-      if (lookup){
-        var myTeamTeam = myTeam[0].team
-        var placementTeam = myTeamTeam == lookup.team ? 1 : 2
-        var collection = action.type == "ban" ? _S.bans : _S.picks
-        
-        UpdatePath("lolChampSelect/"+action.type+"/"+placementTeam+"/"+(lookup.cellId % 5), action)
-        //UpdateDisplaySlot(placementTeam, lookup.cellId % 5, collection,action);
-
+      var trueCellId = action.type+action.actorCellId
+      
+      if (processedCells.includes(trueCellId))
+        continue;
+      
+      processedCells.push(trueCellId)
+      
+      var player = GetPlayerByCellId(action.actorCellId)
+      
+      if (!player)
+        continue;
+      
+      var collection = action.type == "ban" ? _S.bans : _S.picks
+      var placementTeam = myTeam[0].team == player.team ? 1 : 2    
+      var slot = collection[placementTeam][player.cellId % 5]
+      
+      var changedProperties = UpdateSlot(slot, action, player)
+      
+      for(var p = 0; p < changedProperties.length; p++){
+        UpdatePath("lolChampSelect/"+action.type+"/"+placementTeam+"/"+(action.actorCellId % 5)+"/"+changedProperties[p], slot[changedProperties[p]])
       }
     }
   } 
@@ -306,49 +334,6 @@ function CreateDiv(classname, innerHTML){
   return el;
 }
 
-function ValueChanged(context, data, prop){
-  //console.log(context[prop], data == null ? null : data[prop], prop)
-  
-  if (data == null || data[prop] == null)
-    delete context[prop]
-  else
-    context[prop] = data[prop]
-  
-  if (prop == "completed" && context.type == "ban" && context[prop] && !data[prop]){
-  }
-}
-
-function UpdateDataContext(context, data){
-  
-  var difference = false;
-  
-  if (context.age != age){
-    
-    if (!context.dcProperties)
-      context.dcProperties = {}
-    
-    for(var prop in context.dcProperties){
-      if (data == null || data[prop] == null){
-        difference = true;
-        ValueChanged(context, data, prop)
-        delete context.dcProperties[prop]
-      }
-    }
-    
-    for(var prop in data){
-      context.dcProperties[prop] = 1
-      if (context[prop] != data[prop]){
-        difference = true;
-        ValueChanged(context, data, prop)
-      }
-    }
-    
-    context.age = age;
-  }
-  
-  return difference;
-}
-
 function GetSummonerName(summonerId, cellId){
   var summonerMap = _S.lolChampSelect.summoners;
   
@@ -359,66 +344,6 @@ function GetSummonerName(summonerId, cellId){
     return "Summoner "+(cellId+1);
   
   return summonerMap[summonerId].displayName
-}
-
-function PickOnUpdate(el, data){
-  
-  var display = el.querySelector(".display")
-  var pickTextElement = el.querySelector(".pick-text")
-  var playerName = el.querySelector(".pick-player")
-  var champName = el.querySelector(".pick-champ")
-  var roleIcon = el.querySelector(".pos-icon")
-  
-  if (data == null){
-    //console.log("Resetting pic")
-    playerName.innerHTML = ""
-    champName.innerHTML = ""
-    roleIcon.style.backgroundImage = null
-    ReplaceStyles(el, "", Layouts)
-    display.style.backgroundColor = null;
-    display.style.backgroundImage = null;
-    display.style.opacity = null;
-  } else {
-
-    var player = GetPlayerByCellId(data.actorCellId)
-    
-    var champ = champData().byId[data.championId]
-    
-    playerName.innerHTML = GetSummonerName(player.summonerId, data.actorCellId)
-    champName.innerHTML = champ ? champ.name : "picking..."
-    
-    roleIcon.style.backgroundImage = "url( "+"assets/roles/role-"+(player.assignedPosition == "" ?  "fill" : player.assignedPosition)+".png"+" )"
-    
-    if (!champ){
-      if (data.isInProgress){
-        ReplaceStyles(el, "during-initial", Layouts)
-        display.style.backgroundImage = null;
-        
-        display.style.opacity = 0.8
-        
-        if (player.team == 1)
-          display.style.backgroundColor = "var(--team-left-color)"
-        else 
-          display.style.backgroundColor = "var(--team-right-color)"
-      }
-
-    } else{
-      ReplaceStyles(el, "after-initial", Layouts)
-      
-      var region = champData().splash.horizontal[champ.id];
-      var url = GenerateSplashArtUrl(champ.id)
-      
-      display.style.backgroundImage = "url( "+url+" )"
-      display.style.backgroundPositionX = region.backgroundPositionX;
-      display.style.backgroundPositionY = region.backgroundPositionY;
-      display.style.transform = region.transform;
-      
-      if (!el.dataContext.completed)
-        display.style.opacity = 0.8;
-      else
-        display.style.opacity = 1.0;
-    }
-  }
 }
 
 function CreatePick(_parent){
@@ -435,41 +360,10 @@ function CreatePick(_parent){
 function CreateBan(_parent){
   var el = CreateDiv("ban","")
   _parent.appendChild(el)
-  el.dataContext.update = function(data){
-    if (UpdateDataContext(el.dataContext, data) || data == null){
-     
-     if (data == null){
-       el.style.backgroundColor = null;
-       el.style.backgroundImage = null;
-     } else {
-     
-        var champ = _S.lolChampionData.byId[data.championId]
-         
-        var player = GetPlayerByCellId(data.actorCellId) 
-         
-        if (!champ){
-          if (player.team == 1)
-            el.style.backgroundColor = "var(--team-one-color)"
-          else 
-            el.style.backgroundColor = "var(--team-two-color)"        
-          
-        } else{
-          var url = GenerateSquareArtUrl(champ.id)
-          
-          el.style.backgroundImage = "url( "+url+" )"
-          if (!el.dataContext.completed)
-            el.style.opacity = 0.6;
-          else
-            el.style.opacity = 1.0;
-        }
-      }
-    }
-  }
   return el;
 }
 
 //#endregion DataContext
-
 
 //#region Dom Manipulation
 function ReplaceStyles(elem, style,styles){
@@ -591,115 +485,185 @@ function UpdateChampionData(){
   })
 }
 
+function StringFormatConverter(formatString){
+  return (binding,value) => {
+    return formatString.replace("{0}", value)
+  }
+}
+
+function SummonerNameConverter(){
+  return (binding,value) => {
+    if (value != null)
+      return GetSummonerName(value, binding.dataContext.player.cellId)
+  }
+}
+
+function ElementAttributeSetter(converter){
+  return (binding, value) => {
+    binding.dataContext[binding.attribute] = (converter ? converter(binding,value) : value)
+  }
+}
+
+function CssVariableSetter(){
+  return (binding, value) => binding.dataContext.setProperty(binding.attribute, value)
+}
+
+function CssVariableAttributeSetter(){
+  return (binding, value) => { binding.dataContext[binding.attribute] = "var("+value+")" }
+}
+
+function ConditionalSetter(originalSetter, newValue){
+  return (binding, value) => { return value ? originalSetter(binding,newValue) : null }
+}
+
+function BindPick(team, slot){
+  
+  var elem = _S.pickElements[team][slot];
+  var slotPath = "lolChampSelect/pick/"+team+"/"+slot+"/"
+  BindSetter(elem.querySelector(".pick-player"), "innerHTML", slotPath+"summonerName", ElementAttributeSetter)
+  BindSetter(elem.querySelector(".pick-champ"), "innerHTML",  slotPath+"championName", ElementAttributeSetter)
+  BindSetter(elem.querySelector(".display").style, "backgroundColor", slotPath+"team", (binding, value) => {
+    if (value == null)
+       binding.dataContext[binding.attribute] = null;
+    if (value == 1)
+      binding.dataContext[binding.attribute] = "var(--team-left-color)"
+    if (value == 2)
+      binding.dataContext[binding.attribute] = "var(--team-right-color)"
+  });
+  BindSetter(elem.querySelector(".pick-champ"), "src",  slotPath+"championName", ElementAttributeSetter)
+  
+  /*BindSetter(elem, "sessionAction", "lolChampSelect/pick/"+team+"/"+slot+"", ElementAttributeSetter())
+  BindSetter(elem.querySelector(".pick-player"), "player", "lolChampSelect/pick/"+team+"/"+slot+"/player", ElementAttributeSetter())
+  BindSetter(elem.querySelector(".pick-player"), "innerHTML", "lolChampSelect/pick/"+team+"/"+slot+"/player/summonerId", ElementAttributeSetter(SummonerNameConverter()))
+  BindSetter(elem.querySelector(".display").style, "backgroundColor", "lolChampSelect/pick/"+team+"/"+slot+"/player/team", (binding, value) => {
+    if (value == null)
+       binding.dataContext[binding.attribute] = null;
+    if (value == 1)
+      binding.dataContext[binding.attribute] = "var(--team-left-color)"
+    if (value == 2)
+      binding.dataContext[binding.attribute] = "var(--team-right-color)"
+  })
+ 
+  BindSetter(elem, "*", "lolChampSelect/pick/"+team+"/"+slot+"/championId", (binding, value) => {
+    var el = binding.dataContext;
+    var action = el.sessionAction;
+    var display = el.querySelector(".display")
+    var champName = el.querySelector(".pick-champ")
+    
+    if (value == null){
+      ReplaceStyles(el, "", Layouts)
+      champName.innerHTML = ""
+    }
+    else if (value != 0 ) {
+      var champ = champData().byId[value]
+      
+      ReplaceStyles(el, "after-initial", Layouts)
+
+      var region = champData().splash.horizontal[champ.id];
+      var url = GenerateSplashArtUrl(champ.id)
+      
+      display.style.backgroundImage = "url( "+url+" )"
+      console.log(region, url, champ)
+      display.style.backgroundPositionX = region.backgroundPositionX;
+      display.style.backgroundPositionY = region.backgroundPositionY;
+      display.style.transform = region.transform;      
+
+      champName.innerHTML = champ.name
+    } else if ( action.isInProgress ){
+      ReplaceStyles(el, "during-initial", Layouts)
+      display.style.backgroundImage = null;
+      champName.innerHTML = "picking..."
+    }    
+    
+  });
+ 
+  BindSetter(elem.querySelector(".display").style, "opacity", "lolChampSelect/pick/"+team+"/"+slot+"/completed", (binding, value) => {
+    if (!value) 
+      binding.dataContext[binding.attribute] = 0.8
+    else 
+      binding.dataContext[binding.attribute] = 1.0
+  })*/
+}
+
+function BindBan(team, slot){
+  /*var elem = _S.bans[team][slot];
+  
+  BindSetter(elem, "sessionAction", "lolChampSelect/ban/"+team+"/"+slot+"", ElementAttributeSetter())
+  
+  BindSetter(elem.style, "opacity", "lolChampSelect/ban/"+team+"/"+slot+"/completed", (binding, value) => {
+    if (!value) 
+      binding.dataContext[binding.attribute] = 0.8
+    else 
+      binding.dataContext[binding.attribute] = 1.0
+  })  
+
+  BindSetter(elem.style, "backgroundColor", "lolChampSelect/ban/"+team+"/"+slot+"/isInProgress", (binding, value) => {
+    if (!value)
+      binding.dataContext[binding.attribute] = null
+    else {
+      binding.dataContext[binding.attribute] = team == 1 ? "var(--team-left-color)" : "var(--team-right-color)"
+    }
+  })    
+ 
+  BindSetter(elem.style, "backgroundImage", "lolChampSelect/ban/"+team+"/"+slot+"/championId", (binding, value) => {
+    if (!value) 
+      binding.dataContext[binding.attribute] = null
+    else {
+      var champ = _S.lolChampionData.byId[value]
+      var url = GenerateSquareArtUrl(champ.id)
+          
+      binding.dataContext[binding.attribute] = "url( "+url+" )"
+    }
+  })   */
+ 
+}
+
+function CreateSlot(){
+  return {
+    "summonerName" : "N/A",
+    "championName" : "",
+    "active" : false,
+    "finished" : false,
+    "team" : 0,
+    "image": ""
+  }
+}
+
 function Main(){
   for (var i = 0; i < 5; i++){
-    _S.picks[1].push(CreatePick(GetPickContainer(1)))
-    _S.picks[2].push(CreatePick(GetPickContainer(2)))
-    _S.bans[1].push(CreateBan(GetBanContainer(1)))
-    _S.bans[2].push(CreateBan(GetBanContainer(2)))
+    _S.pickElements[1].push(CreatePick(GetPickContainer(1)))
+    _S.pickElements[2].push(CreatePick(GetPickContainer(2)))
+    _S.banElements[1].push(CreateBan(GetBanContainer(1)))
+    _S.banElements[2].push(CreateBan(GetBanContainer(2)))
+    
+    _S.picks[1].push(CreateSlot()) 
+    _S.picks[2].push(CreateSlot()) 
+    _S.bans[1].push(CreateSlot()) 
+    _S.bans[2].push(CreateSlot()) 
+    
+    BindPick(1, i)
+    BindPick(2, i)
+    BindBan(1, i)
+    BindBan(2, i)
   }
   
   preloadImage(GenerateSplashArtUrl, 0);
   preloadImage(GenerateSquareArtUrl, 0);
 
-  BindElementAttribute(document.querySelector(".teaminfo-left .logo img"), "src", "lolChampSelect/admin/leftTeamIcon", (binding, value) => binding.object[binding.attribute] = "assets/teams/"+value )
-  BindElementAttribute(document.querySelector(".teaminfo-left .name p"), "innerHTML", "lolChampSelect/admin/leftTeamName" )
-  BindElementAttribute(document.querySelector(".teaminfo-left .score p"), "innerHTML", "lolChampSelect/admin/leftTeamScore" )
-  BindElementAttribute(document.documentElement.style, "--team-left-color", "lolChampSelect/admin/leftTeamColor", (binding, value) => binding.object.setProperty(binding.attribute, value))
+  //BindElementSetter(document, ".teaminfo-left .logo img", "src", "lolChampSelect/admin/leftTeamIcon")
+  BindSetter(document.querySelector(".teaminfo-left .logo img"), "src", "lolChampSelect/admin/leftTeamIcon", ElementAttributeSetter(StringFormatConverter("assets/teams/{0}")))
+  BindSetter(document.querySelector(".teaminfo-left .name p"), "innerHTML", "lolChampSelect/admin/leftTeamName", ElementAttributeSetter() )
+  BindSetter(document.querySelector(".teaminfo-left .score p"), "innerHTML", "lolChampSelect/admin/leftTeamScore", ElementAttributeSetter() )
+  BindSetter(document.documentElement.style, "--team-left-color", "lolChampSelect/admin/leftTeamColor", CssVariableSetter())
  
-  BindElementAttribute(document.querySelector(".teaminfo-right .logo img"), "src", "lolChampSelect/admin/rightTeamIcon", (binding, value) => binding.object[binding.attribute] = "assets/teams/"+value )
-  BindElementAttribute(document.querySelector(".teaminfo-right .name p"), "innerHTML", "lolChampSelect/admin/rightTeamName" )
-  BindElementAttribute(document.querySelector(".teaminfo-right .score p"), "innerHTML", "lolChampSelect/admin/rightTeamScore" )
-  BindElementAttribute(document.documentElement.style, "--team-right-color", "lolChampSelect/admin/rightTeamColor", (binding, value) => binding.object.setProperty(binding.attribute, value))
+  BindSetter(document.querySelector(".teaminfo-right .logo img"), "src", "lolChampSelect/admin/rightTeamIcon", ElementAttributeSetter(StringFormatConverter("assets/teams/{0}")))
+  BindSetter(document.querySelector(".teaminfo-right .name p"), "innerHTML", "lolChampSelect/admin/rightTeamName", ElementAttributeSetter() )
+  BindSetter(document.querySelector(".teaminfo-right .score p"), "innerHTML", "lolChampSelect/admin/rightTeamScore", ElementAttributeSetter() )
+  BindSetter(document.documentElement.style, "--team-right-color", "lolChampSelect/admin/rightTeamColor", CssVariableSetter())
  
-  BindElementAttribute(_S.picks[1][0].querySelector(".display").style, "backgroundColor", "lolChampSelect/pick/1/0/isInProgress", (binding, value) => {
-    binding.object[binding.attribute] = "var("+(value ? "--team-left-color" : "")+")"
-  })
- 
-  BindElementAttribute(_S.picks[1][0].querySelector(".pick-player"), "innerHTML", "lolChampSelect/pick/1/0/actorCellId", (binding, value) => {
-    if (value == null)
-      return;
-    
-    var player = GetPlayerByCellId(value)
 
-    console.log(GetSummonerName(player.summonerId, value))
-    binding.object[binding.attribute] = GetSummonerName(player.summonerId, value)
-  }) 
- 
   SendMessage("Subscribe","lolChampSelect/session")
   SendMessage("Subscribe","lolChampSelect/summoners")
   SendMessage("Subscribe","lolChampSelect/admin")
   initDone = true;
 }
-
-
-
-/*fetch("assets/pickregion.json")
-.then(res => res.json())
-.then((out) => {
-  pickRegions = out;
-  for (var k in pickRegions){
-    var r = pickRegions[k];
-  }
-  SendMessage("Update",pickRegions, "lolChampionData/splash/horizontal")
-  /*setTimeout(function(){SetPick(1, 3, "Zyra")}, 2000);
-  setTimeout(function(){SetPick(1, 3, "Ahri")}, 4000);
-  setTimeout(function(){SetPick(1, 3, "Senna")}, 6000);
-  setTimeout(function(){SetPick(1, 3, "Sett")}, 8000);*/
-//})
-
-/*const el = document.querySelector(".pick .display");
-const inv = document.querySelector(".invert")
-const save = document.querySelector(".save")
-
-var on = false;
-var ccount = 1
-var cid = 0
-var lnk = ""
-
-inv.addEventListener("click", (e) => {
-  if (el.style.transform == "scaleX(-1)")
-    el.style.transform = "";
-  else
-    el.style.transform = "scaleX(-1)"
-});
-
-save.addEventListener("click", (e) => {
-  if (ccount > 1){
-    pickRegions[championsByIndex[ccount-1].id] = {backgroundPositionX: el.style.backgroundPositionX, backgroundPositionY: el.style.backgroundPositionY, transform: el.style.transform}
-  }
-  
-  while (pickRegions[championsByIndex[ccount].id])
-    ccount++;
-  
-  cid = championsByIndex[ccount]
-  lnk = "url( https://cdn.communitydragon.org/latest/champion/"+cid.id+"/splash-art/centered )"
-  el.style.backgroundImage = lnk
-  ccount++;  
-});
-
-el.addEventListener("mousedown", (e) => {
-  on = true;
-});
-
-el.addEventListener("mouseup", (e) => {
-  on = false;
-});
-
-el.addEventListener("click", (e) => {
-  
-});
-
-el.addEventListener("mouseleave", (e) => {
-  on = false;
-});
-
-
-el.addEventListener("mousemove", (e) => {
-  if (on){
-    el.style.backgroundPositionX = -e.offsetX + "px";
-    el.style.backgroundPositionY = -e.offsetY + "px";
-  }
-});*/
-
-
