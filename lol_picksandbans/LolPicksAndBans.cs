@@ -1,6 +1,7 @@
 ﻿using LightWeightOverlay;
 using LightWeightOverlay.Applications;
 using System;
+using System.Threading;
 using System.Threading.Tasks;
 using WatsonWebserver;
 
@@ -18,11 +19,14 @@ namespace lol_picksandbans
             _server = s;
             _hook = new LCUHook(_server);
 
-            _hook.ConnectToLeague();
+            new Thread(() => { _hook.PlaybackSessionlog(); }).Start();
+
+           
 
             pbRoute = new SpecialRouteProcessor("/lol_picksandbans/", "apps/lol_picksandbans/web/");
             pbRoute.AddToWebserver(s.WebServer);
 
+            //_hook.ConnectToLeague();
             Console.WriteLine("Pick&Ban Overlay reachable under: /lol_picksandbans/");
         }
 

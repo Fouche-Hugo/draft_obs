@@ -6,6 +6,7 @@ using LoLApi;
 using Newtonsoft.Json;
 using System;
 using System.Collections.Generic;
+using System.IO;
 using System.Linq;
 using System.Net.Http;
 using System.Reflection;
@@ -21,6 +22,7 @@ namespace lol_picksandbans
         public LCUHook(LWOServer s)
         {
             _server = s;
+            sessionLog = JsonConvert.DeserializeObject<Dictionary<DateTime, Session>>(File.ReadAllText("sessionLog.json"));
         }
          int i = 0;
 
@@ -31,6 +33,18 @@ namespace lol_picksandbans
 
         public LeagueClientApi currentAPI;
 
+        public void PlaybackSessionlog()
+        {
+            sessionLog = JsonConvert.DeserializeObject<Dictionary<DateTime, Session>>(File.ReadAllText("sessionLog.json")); 
+
+            while (true)
+            foreach(var k in sessionLog.Keys)
+            {
+                _server.Broadcast(_server.State.UpdatePath("lolChampSelect/session", sessionLog[k]), "").Wait();
+                Console.WriteLine(k.ToString() + " Key to continue");
+                Console.ReadLine();
+            }
+        }
 
         public  async Task ConnectToLeague()
         {
@@ -85,7 +99,9 @@ namespace lol_picksandbans
 
         }
 
-         Dictionary<long, Summoner> Summoners = new Dictionary<long, Summoner>();
+        Dictionary<long, Summoner> Summoners = new Dictionary<long, Summoner>();
+
+        Dictionary<DateTime, Session> sessionLog;// = new Dictionary<DateTime, Session>();
 
         private  void OnSessionChanged(object sender, LeagueEvent e)
         {
@@ -97,6 +113,10 @@ namespace lol_picksandbans
             var session = Session.FromJson(result);
 
             var newSummoner = false;
+
+            sessionLog[DateTime.Now] = session;
+
+            //File.WriteAllText("sessionLog.json",JsonConvert.SerializeObject(sessionLog));
 
             foreach (var p in session.MyTeam.Concat(session.TheirTeam))
             {
