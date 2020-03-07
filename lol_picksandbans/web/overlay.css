@@ -301,18 +301,18 @@ body *{
 }
 
 .truncated-picks :nth-child(n+1){
-  flex-grow: 5
+  flex-grow: 3
 }
 
 .truncated-picks :nth-child(n+4){
-  flex-grow: 3
+  flex-grow: 2
 }
 
 .pick{
   box-shadow: inset 0px 0px 1px 1px #00000055;
   border-style: solid;
   border-width: 1px;
-  flex-grow: 3;
+  flex-grow: 2;
 
   transition: 
     left 0.75s,

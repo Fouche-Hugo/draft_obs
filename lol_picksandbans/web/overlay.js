@@ -259,7 +259,7 @@ function UpdatePick(i, teamid, team, inProgress){
     
     var splashArtTransform = champ == null ? null :_S.lolChampionData.splash.horizontal[champ.id]
     
-    slot.flex = inProgressAction ? "8" : null
+    slot.flex = inProgressAction ? "3" : null
 
     slot.style = {
       opacity: inProgressAction ? 0.8 : 1,
