@@ -1,19 +1,8 @@
 {
   "lolChampSelect": {
     "session": {
+      "summoners": [],
       "actions": [
-        [
-          {
-            "actorCellId": 0,
-            "championId": 0,
-            "completed": false,
-            "id": 1,
-            "isAllyAction": true,
-            "isInProgress": true,
-            "pickTurn": 1,
-            "type": "pick"
-          }
-        ]
       ],
       "allowBattleBoost": false,
       "allowDuplicatePicks": false,
@@ -27,51 +16,26 @@
       },
       "benchChampionIds": [],
       "benchEnabled": false,
-      "boostableSkinCount": 1,
+      "boostableSkinCount": 0,
       "chatDetails": {
-        "chatRoomName": "c1~267982c5b842f318543bccf4c08effdf45c48b25@sec.pvp.net",
-        "chatRoomPassword": "HN3LJFiqL0wB9C1p"
+        "chatRoomName": "321d94ef-12b7-470e-8e08-a53c29924b0f@champ-select.pvp.net",
+        "chatRoomPassword": null
       },
-      "counter": -1,
+      "counter": 14,
       "entitledFeatureState": {
         "additionalRerolls": 0,
         "unlockedSkinIds": []
       },
-      "hasSimultaneousBans": false,
-      "hasSimultaneousPicks": true,
+      "hasSimultaneousBans": true,
+      "hasSimultaneousPicks": false,
       "isSpectating": false,
-      "localPlayerCellId": 0,
+      "localPlayerCellId": 5,
       "lockedEventIndex": -1,
       "myTeam": [
-        {
-          "assignedPosition": "",
-          "cellId": 0,
-          "championId": 0,
-          "championPickIntent": 0,
-          "entitledFeatureType": "",
-          "playerType": "PLAYER",
-          "selectedSkinId": 0,
-          "spell1Id": 21,
-          "spell2Id": 12,
-          "summonerId": 19247196,
-          "team": 1,
-          "wardSkinId": -1
-        }
       ],
       "rerollsRemaining": 0,
       "skipChampionSelect": false,
-      "theirTeam": [],
-      "timer": {
-        "adjustedTimeLeftInPhase": 89791,
-        "adjustedTimeLeftInPhaseInSec": 89,
-        "internalNowInEpochMs": 1583074306208,
-        "isInfinite": false,
-        "phase": "BAN_PICK",
-        "timeLeftInPhase": 92791,
-        "timeLeftInPhaseInSec": 92,
-        "totalTimeInPhase": 92827
-      },
-      "trades": []
+      "theirTeam": []
     },
     "summoners": {
       "19247196": {
@@ -95,14 +59,33 @@
       }
     },
     "admin": {
-      "leftTeamColor": "rgba(180, 28, 49, 255)",
+      "leftTeamColor": "rgba(180, 28, 69, 255)",
       "leftTeamName": "Red",
       "leftTeamScore": "0",
       "rightTeamName": "Blue",
-      "rightTeamScore": "0",
+      "rightTeamScore": "1",
       "rightTeamColor": "rgba(89, 140, 245, 255)",
       "rightTeamIcon": "team-right.png",
-      "leftTeamIcon": "team-left.png"
+      "leftTeamIcon": "team-left.png",
+      "positions": [
+        null,
+        [
+          "top",
+          "jungle",
+          "middle",
+          "bottom",
+          "utility"
+        ],
+        [
+          "auto",
+          "auto",
+          "auto",
+          "auto",
+          "auto"
+        ]
+      ],
+      "matchInfo": "Match 15 / Game 1",
+      "patchInfo": "Patch 10.5"
     }
   },
   "lolChampSelect2": 5,

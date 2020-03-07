@@ -142,22 +142,34 @@ function DeterminePhase(timerPhase, actions){
   }
 }
 
+function safeBanCount(){
+  if (_S && _S.lolChampSelect && _S.lolChampSelect.session && _S.lolChampSelect.session.bans && _S.lolChampSelect.session.bans.myTeam)
+    return _S.lolChampSelect.session.bans.myTeam.length;
+  return 0;
+}
+
 function UpdatePhase(newPhase){
   if (lastPhase == newPhase)
     return false;
   
-  lastPhase = newPhase
   console.log(newPhase)
   switch(newPhase){
     case "Pick Phase":
-      setTimeout(function() {
-        SetLayout("soloqueue","picks")
-      }, 1500);    
+      if (!_S.lolChampSelect.session.hasSimultaneousPicks && !_S.lolChampSelect.session.hasSimultaneousBans){
+        if (safeBanCount() <= 3)
+          setTimeout(function() { SetLayout("pro","p2") }, 1500);   
+        else
+          setTimeout(function() { SetLayout("pro","p4") }, 1500);  
+      } else
+        setTimeout(function() { SetLayout("soloqueue","picks") }, 1500); 
       break;
     case "Ban Phase":
-      setTimeout(function() {
-        SetLayout("soloqueue","bans")
-      }, 1500);      
+      if (safeBanCount() > 0)
+        setTimeout(function() { SetLayout("pro","p3") }, 1500);   
+      else if (!_S.lolChampSelect.session.hasSimultaneousBans)
+        setTimeout(function() { SetLayout("pro","p1") }, 1500);   
+      else     
+        setTimeout(function() { SetLayout("soloqueue","bans") }, 1500); 
       break;
     case "Planning":
       SetLayout("header")
@@ -165,17 +177,21 @@ function UpdatePhase(newPhase){
     case "Game Starting":
     case "Waiting":
       SetLayout("reset")
-      //ResetPicksAndBans();
       break;
     default:
   }
   
+  lastPhase = newPhase
+
   SetPhaseText(newPhase)
 }
 
 function UpdateTimer(timer){
-  if (timer && timer.timeLeftInPhase)
-    phaseTimer = timer.timeLeftInPhase
+  
+  if (timer && timer.adjustedTimeLeftInPhase){
+    phaseTimer = -(Date.now()-_S.lolChampSelect.session.timer.internalNowInEpochMs-_S.lolChampSelect.session.timer.adjustedTimeLeftInPhase)
+  }
+    
 }
 
 function UpdateBan(i, teamid, bans, inProgress, completed,firstId){
@@ -185,8 +201,6 @@ function UpdateBan(i, teamid, bans, inProgress, completed,firstId){
   var actionId = (teamid-1)*5+i+firstId;
   var inProg = inProgress.filter((x) => x.id == actionId && x.type == "ban")
   var complete = completed.filter((x) => x.id == actionId && x.type == "ban")
-  
-  //console.log(teamid, i, actionId, inProg.length, complete.length)
   
   if (inProg.length > 0){
     
@@ -200,7 +214,7 @@ function UpdateBan(i, teamid, bans, inProgress, completed,firstId){
       backgroundImage:  champ == null ? null : "url("+GenerateSquareArtUrl(champ.id)+")",
     }       
   }
-  if (complete.length > 0){
+  else if (complete.length > 0){
 
     var completeAction = complete[0]
     
@@ -211,6 +225,12 @@ function UpdateBan(i, teamid, bans, inProgress, completed,firstId){
       backgroundColor: champ == null ? (teamid == 1 ? "var(--team-left-color)" : "var(--team-right-color)") : null,
       backgroundImage:  champ == null ? null : "url("+GenerateSquareArtUrl(champ.id)+")",
     }    
+  } else {
+    slot.style = {
+      opacity: null,
+      backgroundColor: null,
+      backgroundImage: null
+    }
   }
   
   UpdatePath(null, "lolChampSelect/ban/"+teamid+"/"+i, slot) 
@@ -239,13 +259,15 @@ function UpdatePick(i, teamid, team, inProgress){
     
     var splashArtTransform = champ == null ? null :_S.lolChampionData.splash.horizontal[champ.id]
     
+    slot.flex = inProgressAction ? "8" : null
+
     slot.style = {
       opacity: inProgressAction ? 0.8 : 1,
       backgroundColor: inProgressAction && champ == null ? (member.team == 1 ? "var(--team-left-color)" : "var(--team-right-color)") : null,
       backgroundImage:  champ == null ? null : "url("+GenerateSplashArtUrl(champ.id)+")",
       transform: splashArtTransform == null ? null : splashArtTransform.transform,
       backgroundPositionX: splashArtTransform == null ? null : splashArtTransform.backgroundPositionX,
-      backgroundPositionY: splashArtTransform == null ? null : splashArtTransform.backgroundPositionY
+      backgroundPositionY: splashArtTransform == null ? null : splashArtTransform.backgroundPositionY,
     }
     
     if (_S.lolChampSelect.admin && _S.lolChampSelect.admin.positions && _S.lolChampSelect.admin.positions[teamid] && _S.lolChampSelect.admin.positions[teamid][i] != "auto")
@@ -276,7 +298,7 @@ function UpdatePB(){
   UpdateTimer(cs.timer)
   UpdatePhase(DeterminePhase(cs.timer ? cs.timer.phase : "", actions))
   
-  if (myTeam.length == 0)
+  if (myTeam.length == 0 || actions.length == 0)
     return;
   
   var inProgress = GetInProgressActions();
@@ -319,7 +341,7 @@ function GetSummonerName(summonerId, cellId){
 }
 
 function SetLayout(type, phase){
-  
+  console.log(type, phase)
   if (type == "header")
     SetClassLayout("header","", "", "")
   
@@ -341,12 +363,15 @@ function SetLayout(type, phase){
   
   if (type == "pro"){
     if (phase == "p1"){
+      SetClassLayout("header","", "", "")
       SetClassLayout("bans","three-big", "top", "gone")
       SetClassLayout("bans","three-big", "top", "", 500)
       SetClassLayout("picks","","", "gone");
     }
     if (phase == "p2"){
-      SetClassLayout("bans","three-big", "bottom", "")
+      SetClassLayout("bans","five-big", "top", "gone")
+      SetClassLayout("bans","five-medium", "bottom", "gone", 500)
+      SetClassLayout("bans","three-big", "bottom", "", 1200)
       SetClassLayout("picks", "truncated-picks", "", "", 500)
     }
     if (phase == "p3"){

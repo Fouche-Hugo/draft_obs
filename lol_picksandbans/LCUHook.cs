@@ -22,7 +22,7 @@ namespace lol_picksandbans
         public LCUHook(LWOServer s)
         {
             _server = s;
-            sessionLog = JsonConvert.DeserializeObject<Dictionary<DateTime, Session>>(File.ReadAllText("sessionLog.json"));
+            //sessionLog = JsonConvert.DeserializeObject<Dictionary<DateTime, Session>>(File.ReadAllText("sessionLog.json"));
         }
          int i = 0;
 
@@ -114,7 +114,7 @@ namespace lol_picksandbans
 
             var newSummoner = false;
 
-            sessionLog[DateTime.Now] = session;
+            //sessionLog[DateTime.Now] = session;
 
             //File.WriteAllText("sessionLog.json",JsonConvert.SerializeObject(sessionLog));
 

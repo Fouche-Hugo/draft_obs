@@ -52,7 +52,7 @@
     <div id="templates" style="display: none" >
       <div class='ban' bind-context="{lolChampSelect/ban/{team}/{slot}/}" bind="{attribute=style path=style in=propertyCopyConverter}"></div>
 
-      <div class="pick" bind-context="{lolChampSelect/pick/{team}/{slot}/}" bind="{attribute=layout path=layout in=layoutConverter}">
+      <div class="pick" bind-context="{lolChampSelect/pick/{team}/{slot}/}" bind="{attribute=layout path=layout in=layoutConverter}{attribute=style.flex-grow path=flex}">
         <div class='pick-text'>
           <div class='pos-icon' bind="{attribute=style.backgroundImage path=positionBackgroundImage}"></div>
           <p class='pick-champ' bind="{attribute=innerHTML path=championName}"/>

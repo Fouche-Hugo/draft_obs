@@ -19,14 +19,14 @@ namespace lol_picksandbans
             _server = s;
             _hook = new LCUHook(_server);
 
-           // new Thread(() => { _hook.PlaybackSessionlog(); }).Start();
-
-           
+            // new Thread(() => { _hook.PlaybackSessionlog(); }).Start();
+            
 
             pbRoute = new SpecialRouteProcessor("/lol_picksandbans/", "apps/lol_picksandbans/web/");
             pbRoute.AddToWebserver(s.WebServer);
 
-            //_hook.ConnectToLeague();
+            _hook.ConnectToLeague();
+
             Console.WriteLine("Pick&Ban Overlay reachable under: /lol_picksandbans/");
         }
 

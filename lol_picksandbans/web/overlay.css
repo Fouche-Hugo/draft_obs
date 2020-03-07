@@ -262,7 +262,8 @@ body *{
     bottom 0.75s,
     height 0.75s,
     width 0.75s,
-    background-image 1s;
+    background-image 1s,
+    flex-grow 0.75s;
 }
 
 .gone.picks.left{
@@ -299,11 +300,19 @@ body *{
   height: 732px;
 }
 
+.truncated-picks :nth-child(n+1){
+  flex-grow: 5
+}
+
+.truncated-picks :nth-child(n+4){
+  flex-grow: 3
+}
+
 .pick{
   box-shadow: inset 0px 0px 1px 1px #00000055;
   border-style: solid;
   border-width: 1px;
-  flex: 1;
+  flex-grow: 3;
 
   transition: 
     left 0.75s,
@@ -314,7 +323,9 @@ body *{
     width 0.75s,
     background-image 0.75s,
     transform 0.1s 0.75s,
-    opacity 0.75s;
+    opacity 0.75s,
+    flex-grow 0.75s;
+
 }
 
 .pick .display {
@@ -333,10 +344,6 @@ body *{
 
 .right .pick .display {
   transform: scaleX(-1)
-}
-
-.pick{
-  background-position: 40% 20%;
 }
 
 .pick{
