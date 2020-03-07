@@ -11,6 +11,9 @@ _S.bans = {1: [], 2: []}
 _S.pickElements = {1: [], 2: []}
 _S.banElements = {1: [], 2: []}
 
+_S.myTeamBanCount = 0
+_S.theirTeamBanCount = 0
+
 var initDone = false;
 var epoch = 0;
 var phaseTimer = 0;
@@ -120,6 +123,21 @@ function GetInProgressActions(){
   return inProgress;
 }
 
+function GetTeamActions(allied, type){
+  var actions = _S.lolChampSelect.session.actions
+  var inProgress = []
+  
+  for (var i = 0; i < actions.length ; i++){
+    for(var k = 0; k < actions[i].length; k++){  
+      var action = actions[i][k];
+      if (action.type == type && action.isAllyAction == allied){
+        inProgress.push(action)
+      }
+    }
+  }
+  return inProgress;
+}
+
 function DeterminePhase(timerPhase, actions){
   
   switch (timerPhase){
@@ -156,7 +174,7 @@ function UpdatePhase(newPhase){
   switch(newPhase){
     case "Pick Phase":
       if (!_S.lolChampSelect.session.hasSimultaneousPicks && !_S.lolChampSelect.session.hasSimultaneousBans){
-        if (safeBanCount() <= 3)
+        if (_S.myTeamBanCount <= 3)
           setTimeout(function() { SetLayout("pro","p2") }, 1500);   
         else
           setTimeout(function() { SetLayout("pro","p4") }, 1500);  
@@ -164,7 +182,7 @@ function UpdatePhase(newPhase){
         setTimeout(function() { SetLayout("soloqueue","picks") }, 1500); 
       break;
     case "Ban Phase":
-      if (safeBanCount() > 0)
+      if (_S.myTeamBanCount > 1)
         setTimeout(function() { SetLayout("pro","p3") }, 1500);   
       else if (!_S.lolChampSelect.session.hasSimultaneousBans)
         setTimeout(function() { SetLayout("pro","p1") }, 1500);   
@@ -175,6 +193,8 @@ function UpdatePhase(newPhase){
       SetLayout("header")
       break;
     case "Game Starting":
+      SetLayout("header")
+      break;
     case "Waiting":
       SetLayout("reset")
       break;
@@ -194,7 +214,40 @@ function UpdateTimer(timer){
     
 }
 
-function UpdateBan(i, teamid, bans, inProgress, completed,firstId){
+function UpdateBan(i, teamid, action){
+
+  //console.log(i, teamid, action)
+  var slot = _S.bans[teamid][i];
+
+  if (action == null){
+    slot.style = {
+      opacity: null,
+      backgroundColor: null,
+      backgroundImage: null
+    }
+  } else if (action.isInProgress){
+    var champ = action.championId > 0 ? champData().byId[action.championId]  : null 
+    
+    slot.style = {
+      opacity: 0.8,
+      backgroundColor: champ == null ? (teamid == 1 ? "var(--team-left-color)" : "var(--team-right-color)") : null,
+      backgroundImage:  champ == null ? null : "url("+GenerateSquareArtUrl(champ.id)+")",
+    }   
+  } else{
+    var champ = action.championId > 0 ? champData().byId[action.championId]  : null 
+    
+    slot.style = {
+      opacity: 1,
+      backgroundColor: champ == null ? (teamid == 1 ? "var(--team-left-color)" : "var(--team-right-color)") : null,
+      backgroundImage:  champ == null ? null : "url("+GenerateSquareArtUrl(champ.id)+")",
+    }   
+  }
+
+  UpdatePath(null, "lolChampSelect/ban/"+teamid+"/"+i, slot) 
+
+}
+
+/*function UpdateBan(i, teamid, bans, inProgress, completed,firstId){
   
   var slot = _S.bans[teamid][i];
   var member = bans[i]
@@ -234,7 +287,7 @@ function UpdateBan(i, teamid, bans, inProgress, completed,firstId){
   }
   
   UpdatePath(null, "lolChampSelect/ban/"+teamid+"/"+i, slot) 
-}
+}*/
 
 function UpdatePick(i, teamid, team, inProgress){
   var member = team[i]
@@ -298,9 +351,12 @@ function UpdatePB(){
   UpdateTimer(cs.timer)
   UpdatePhase(DeterminePhase(cs.timer ? cs.timer.phase : "", actions))
   
-  if (myTeam.length == 0 || actions.length == 0)
+  if (myTeam.length == 0 || actions.length == 0){
+    _S.myTeamBanCount = 0
+    _S.theirTeamBanCount = 0
     return;
-  
+  }
+    
   var inProgress = GetInProgressActions();
   var completed = GetCompletedActions();
   var myTeamId = myTeam[0].team
@@ -311,12 +367,30 @@ function UpdatePB(){
   if (firstBan.length > 0)
     var firstBanId  = firstBan[0].id
   
+  var myTeamBanActions = GetTeamActions(true, "ban")
+  var theirTeamBanActions = GetTeamActions(false, "ban")
+
+  _S.myTeamBanCount = myTeamBanActions.length
+  _S.theirTeamBanCount = theirTeamBanActions.length
+
   for(var i = 0; i < 5; i++){
       UpdatePick(i, myTeamId, myTeam, inProgress)
       UpdatePick(i, theirTeamId, theirTeam, inProgress)
-      UpdateBan(i, myTeamId, bans.myTeamBans, inProgress,completed,firstBanId)
-      UpdateBan(i, theirTeamId, bans.theirTeamBans, inProgress,completed,firstBanId)
+      UpdateBan(i, myTeamId, myTeamBanActions[i])
+      UpdateBan(i, theirTeamId, theirTeamBanActions[i])
   }
+
+  /*var myBans = {}
+
+  for (var i = 0; i < 5; i++){
+    var action = myTeamBanActions[i]
+    UpdateBan(i, myTeamId, bans.myTeamBans, inProgress,completed,firstBanId)
+  }
+
+  for (var i = 0; i < theirTeamBans.length; i++){
+    UpdateBan(theirTeamId, bans.myTeamBans, inProgress,completed,firstBanId)
+  }*/
+
 }
 
 //#region DataContext
@@ -341,7 +415,7 @@ function GetSummonerName(summonerId, cellId){
 }
 
 function SetLayout(type, phase){
-  console.log(type, phase)
+  //console.log(type, phase)
   if (type == "header")
     SetClassLayout("header","", "", "")
   
