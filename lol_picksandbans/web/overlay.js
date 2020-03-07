@@ -1,12 +1,9 @@
-const socket = new WebSocket('ws://localhost:9346');
-
 var Layouts = ["five-medium","five-big", "three-small-two-big", "three-big-two-small", "small-picks","truncated-picks", "three-big","during-initial","after-initial"]
 var Locations = ["top", "bottom"]
 var States = ["gone"]
 
 var lolv = "10.4.1"
 
-var _S = {}
 var champData = () => _S.lolChampionData
 
 _S.picks = {1: [], 2: []}
@@ -15,36 +12,21 @@ _S.pickElements = {1: [], 2: []}
 _S.banElements = {1: [], 2: []}
 
 var initDone = false;
-
-var age = 0;
-
+var epoch = 0;
 var phaseTimer = 0;
+var lastPhase = ""
 
 setInterval(function() {
-  phaseTimer--
+  phaseTimer -= 100
   
   if (phaseTimer < 0)
     phaseTimer = 0;
   
   SetTimerText(phaseTimer)
-},1000);
+},100);
 
 function Log(...arr){
   console.log(arr)
-}
-
-//#region Socket
-function SendMessage(type, content, path){
-  var message = {}
-  message.Type = type;
-  
-  if (type == "Update")
-    message.Content = JSON.stringify(content);
-  else
-    message.Content = content;
-  
-  message.Path = path;
-  socket.send(JSON.stringify(message));
 }
 
 // Connection opened
@@ -52,77 +34,19 @@ socket.addEventListener('open', function (event) {
     SendMessage("Subscribe","lolChampionData")
 });
 
-var bindings = {}
-
-function defaultValueConverter(binding, value){
-  binding.dataContext[binding.attribute] = value
-  return binding.dataContext[binding.attribute]
+function SetElementLayout(elem, layout, locat, state, time){
+  setTimeout(function() {ReplaceStyles(elem, state, States)}, time ? time : 1);
+  setTimeout(function() {ReplaceStyles(elem, locat, Locations)}, time ? time : 1);
+  setTimeout(function() {ReplaceStyles(elem, layout, Layouts)}, time ? time : 1);
+  
 }
 
-function BindSetter(dataContext, attributeName, statePath, setter){
-  if (bindings[statePath] == null)
-    bindings[statePath] = []
-  
-  if (setter == null)
-    setter = defaultValueConverter;
-  
-  if (attributeName.includes(".")){
-    var splits = attributeName.split(".")
-    for (var i = 0; i < splits.length-1; i++){
-      dataContext = dataContext[splits[i]]
-    }
-    attributeName = splits[splits.length-1]
-  }
-  
-  var newBinding = {"dataContext" : dataContext, "attribute": attributeName, "path": statePath, "setter" : setter };
-  
-  newBinding.setValue = function(value){
-    setter(newBinding, value)
-  }
-  
-  bindings[statePath].push(newBinding)
-}
+function SetClassLayout(elementClass, layout, locat, state, time){
+  var eles = document.getElementsByClassName(elementClass);
 
-function ResolvePath(_path){
-
-  var splits = _path.split("/")
-  
-  var current = _S;
-    
-  for (var i = 0; i < splits.length-1; i++){
-    var leg = splits[i]
-    if (current[leg] == null){
-      current[leg] = {}
-    }
-    current = current[leg]
-  }
-  
-  return {"object": current, "attribute": splits[splits.length-1], "value": current[splits[splits.length-1]]};
-}
-
-function UpdatePath(path, object){
-
-  var current = ResolvePath(path)
-  
-  current.object[current.attribute] = object;
-  
-  for(var boundPath in bindings){
-    
-    if (!boundPath.includes(path))
-      continue;
-    
-    for (var i = 0; i < bindings[boundPath].length; i++){
-      var binding = bindings[boundPath][i]
-        
-        var bound = ResolvePath(binding.path)
-        
-        if (bound != null)
-          binding.setValue(bound.value)
-        else
-          binding.setValue("")
-      //}
-    }
-  }
+  for (var i = 0; i < eles.length; i++){
+    SetElementLayout(eles[i], layout, locat, state, time)
+  } 
 }
 
 // Listen for messages
@@ -130,8 +54,8 @@ socket.addEventListener('message', function (event) {
   var message = JSON.parse(event.data);
   
   if (message.Type == "Update"){
-    console.log(message.Path)
-    UpdatePath(message.Path, JSON.parse(message.Content))
+
+    StateOnUpdate(message)
     
     if (!initDone && message.Path == "lolChampionData"){
       Main();
@@ -143,20 +67,9 @@ socket.addEventListener('message', function (event) {
 });
 //#endregion Socket
 
-function GetPlayerByCellId(cellId){
-  var cs = _S.lolChampSelect.session;
-  
-  var lookup = cs.myTeam.find(function(el) { return el.cellId == cellId})
-  
-  if (!lookup)
-    lookup = cs.theirTeam.find(function(el) { return el.cellId == cellId})
-  
-  return lookup;
-}
-
 function SetTimerText(seconds){
   var timer = document.getElementsByClassName("countdown")[0]
-  timer.innerHTML = seconds
+  timer.innerHTML = (seconds/1000).toFixed(0)
 }
 
 
@@ -207,9 +120,6 @@ function GetInProgressActions(){
   return inProgress;
 }
 
-
-var lastPhase = ""
-
 function DeterminePhase(timerPhase, actions){
   
   switch (timerPhase){
@@ -252,6 +162,7 @@ function UpdatePhase(newPhase){
     case "Planning":
       SetLayout("header")
       break;
+    case "Game Starting":
     case "Waiting":
       SetLayout("reset")
       //ResetPicksAndBans();
@@ -263,8 +174,8 @@ function UpdatePhase(newPhase){
 }
 
 function UpdateTimer(timer){
-  if (timer && timer.timeLeftInPhaseInSec)
-    phaseTimer = timer.timeLeftInPhaseInSec
+  if (timer && timer.timeLeftInPhase)
+    phaseTimer = timer.timeLeftInPhase
 }
 
 function UpdateBan(i, teamid, bans, inProgress, completed,firstId){
@@ -275,7 +186,7 @@ function UpdateBan(i, teamid, bans, inProgress, completed,firstId){
   var inProg = inProgress.filter((x) => x.id == actionId && x.type == "ban")
   var complete = completed.filter((x) => x.id == actionId && x.type == "ban")
   
-  console.log(teamid, i, actionId, inProg.length, complete.length)
+  //console.log(teamid, i, actionId, inProg.length, complete.length)
   
   if (inProg.length > 0){
     
@@ -302,7 +213,7 @@ function UpdateBan(i, teamid, bans, inProgress, completed,firstId){
     }    
   }
   
-  UpdatePath("lolChampSelect/ban/"+teamid+"/"+i, slot) 
+  UpdatePath(null, "lolChampSelect/ban/"+teamid+"/"+i, slot) 
 }
 
 function UpdatePick(i, teamid, team, inProgress){
@@ -314,8 +225,6 @@ function UpdatePick(i, teamid, team, inProgress){
     slot.reset();
   } else {
     var isInProgress = inProgress.filter((x) => x.actorCellId == member.cellId && x.type == "pick")
-    
-    console.log(isInProgress)
     
     var champ = null
     
@@ -339,17 +248,24 @@ function UpdatePick(i, teamid, team, inProgress){
       backgroundPositionY: splashArtTransform == null ? null : splashArtTransform.backgroundPositionY
     }
     
+    if (_S.lolChampSelect.admin && _S.lolChampSelect.admin.positions && _S.lolChampSelect.admin.positions[teamid] && _S.lolChampSelect.admin.positions[teamid][i] != "auto")
+    {
+      slot.positionBackgroundImage = "url( "+"assets/roles/role-"+_S.lolChampSelect.admin.positions[teamid][i]+".png"+" )"
+    } else{
+      slot.positionBackgroundImage = "url( "+"assets/roles/role-"+(member.assignedPosition == "" ?  "fill" : member.assignedPosition)+".png"+" )"
+    }
+
     slot.summonerName = GetSummonerName(member.summonerId, member.cellId)
     slot.championName = champ ? champ.name : null
     slot.layout = inProgressAction && champ == null ? "during-initial" : champ != null  ? "after-initial" : ""
   }
   
-  UpdatePath("lolChampSelect/pick/"+teamid+"/"+i, slot)
+  UpdatePath(null,"lolChampSelect/pick/"+teamid+"/"+i, slot)
 }
 
 function UpdatePB(){
-  age++;
-  age = age%500;
+  epoch++;
+  elkcb = epoch%500;
   
   var cs = _S.lolChampSelect.session;
   var actions = cs.actions;
@@ -390,15 +306,6 @@ function GenerateSquareArtUrl(championId){
   return "/assets/cdragon/champion/"+championId+"/square.png"
 }
 
-
-function CreateDiv(classname, innerHTML){
-  var el = document.createElement("div");
-  el.dataContext = {}
-  el.className = classname;
-  el.innerHTML = innerHTML;
-  return el;
-}
-
 function GetSummonerName(summonerId, cellId){
   var summonerMap = _S.lolChampSelect.summoners;
   
@@ -411,45 +318,11 @@ function GetSummonerName(summonerId, cellId){
   return summonerMap[summonerId].displayName
 }
 
-//#region Dom Manipulation
-function ReplaceStyles(elem, style,styles){
-  var ret = false;
-  for (var k = 0; k < styles.length; k++){
-    var cl = styles[k];
-    if (style != cl){
-      elem.classList.remove(cl);
-      ret = true;
-    }
-  }
-  
-  if (style != "")
-    elem.classList.add(style);
-  
-  return ret;
-}
-
-function SetElementLayout(elem, layout, locat, state, time){
-  setTimeout(function() {ReplaceStyles(elem, state, States)}, time ? time : 1);
-  setTimeout(function() {ReplaceStyles(elem, locat, Locations)}, time ? time : 1);
-  setTimeout(function() {ReplaceStyles(elem, layout, Layouts)}, time ? time : 1);
-  
-}
-
-function SetClassLayout(elementClass, layout, locat, state, time){
-  var eles = document.getElementsByClassName(elementClass);
-
-  for (var i = 0; i < eles.length; i++){
-    SetElementLayout(eles[i], layout, locat, state, time)
-  } 
-}
-
-
 function SetLayout(type, phase){
   
   if (type == "header")
     SetClassLayout("header","", "", "")
   
-
   if (type == "soloqueue"){
     if (phase == "bans"){
       SetClassLayout("header","", "", "")
@@ -495,7 +368,6 @@ function SetLayout(type, phase){
 }
 
 //#endregio Dom Manipulation
-
 function preloadImage(CreationFunc, id){
   var splashPreloader = new Image();
   var preloader = document.getElementById("preloader");
@@ -531,24 +403,7 @@ function UpdateChampionData(){
   })
 }
 
-function StringFormatConverter(formatString){
-  return (binding,value) => {
-    return formatString.replace("{0}", value)
-  }
-}
 
-function SummonerNameConverter(){
-  return (binding,value) => {
-    if (value != null)
-      return GetSummonerName(value, binding.dataContext.player.cellId)
-  }
-}
-
-function ElementAttributeSetter(converter){
-  return (binding, value) => {
-    binding.dataContext[binding.attribute] = (converter ? converter(binding,value) : value)
-  }
-}
 
 function layoutConverter(){
   return (binding, value) => {
@@ -559,25 +414,8 @@ function layoutConverter(){
   }
 }
 
-function propertyCopyConverter(){
-  return (binding, value) => {
-    
-    for(var prop in value){
-      binding.dataContext[binding.attribute][prop] = value[prop]
-    }
-  }
-}
-
-function CssVariableSetter(){
-  return (binding, value) => binding.dataContext.setProperty(binding.attribute, value)
-}
-
-function CssVariableAttributeSetter(){
-  return (binding, value) => { binding.dataContext[binding.attribute] = "var("+value+")" }
-}
-
-function ConditionalSetter(originalSetter, newValue){
-  return (binding, value) => { return value ? originalSetter(binding,newValue) : null }
+function teamLogoConverter(){
+  return defaultConverter(stringFormatConverter("assets/teams/{0}"))
 }
 
 function CreateSlot(){
@@ -601,20 +439,6 @@ function CreateSlot(){
   return _this;
 }
 
-function teamLogoConverter(){
-  return ElementAttributeSetter(StringFormatConverter("assets/teams/{0}"))
-}
-
-function urlConverter(){
-  return ElementAttributeSetter(StringFormatConverter("url('{0}')"))
-}
-
-function getBindContext(elem){
-  if (elem.bindContext)
-    return elem.bindContext;
-  return getBindContext(elem.parentElement)
-}
-
 function Main(){
   for (var i = 0; i < 5; i++){
     _S.picks[1].push(CreateSlot()) 
@@ -627,41 +451,10 @@ function Main(){
   preloadImage(GenerateSquareArtUrl, 0);
 
 
-  var bindContexts =  document.querySelectorAll('[bind-context^="{"]');
-
-  for (var i = 0; i < bindContexts.length; i++){
-    var elem = bindContexts[i]
-    elem.bindContext = elem.attributes["bind-context"].nodeValue.replace("{","").replace("}","")
-    //elem.removeAttribute("bind-context")
-  }
-  
-  var bindings = document.querySelectorAll('[bind^="{"]');
-
-  for (var i = 0; i < bindings.length; i++){
-    var elem = bindings[i]
-    
-    var context = getBindContext(elem)
-    
-    var value = elem.attributes.bind.nodeValue
-
-    var bigSplits = value.split("{")
-    for (k = 0; k < bigSplits.length; k++){
-      var bind =  bigSplits[k].replace("}","").trim()
-      
-      var splits = bind.split(" ")
-      
-      if (splits.length > 1){
-        
-        var setter = splits.length > 2 ? window[splits[2]]() : ElementAttributeSetter()
-        BindSetter(elem, splits[0], context+splits[1], setter)
-      }
-    }
-    
-    //elem.removeAttribute("bind")
-  }
-
   SendMessage("Subscribe","lolChampSelect/session")
   SendMessage("Subscribe","lolChampSelect/summoners")
   SendMessage("Subscribe","lolChampSelect/admin")
   initDone = true;
 }
+
+loadBindings();

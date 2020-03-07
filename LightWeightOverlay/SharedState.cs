@@ -59,7 +59,7 @@ namespace LightWeightOverlay
 
             dynamic current = this;
             int o;
-
+            try { 
             for (int i = 0; i < splits.Length - (parent ? 1 : 0); i++)
             {
                 dynamic currentLeg = splits[i];
@@ -67,24 +67,39 @@ namespace LightWeightOverlay
                 if (int.TryParse(splits[i], out o))
                     currentLeg = o;
 
-                if (current is List<object> ? current.Count <= currentLeg : !current.ContainsKey(currentLeg))
+                if (current is List<object> && current.Count <= currentLeg)
                 {
                     if (!createMissing)
-                    {
-                        //Object doesnt exist and were not creating
                         return null;
-                    }
-                    else
+                 
+                    for (int c = current.Count; c <= currentLeg; c++)
                     {
-                        //Object doesnt exist but we are creating
-                        current[currentLeg] = new Dictionary<string, object>();
+                        current.Add(null);
                     }
-                }
 
+                    if (int.TryParse(splits[i + 1], out o))
+                        current[currentLeg] = new List<object>();
+                    else
+                        current[currentLeg] = new Dictionary<string, object>();
+                }
+                else if (current is Dictionary<string, object> && !current.ContainsKey(currentLeg))
+                {
+                    if (!createMissing)
+                        return null;
+
+                    if (int.TryParse(splits[i + 1], out o))
+                        current[currentLeg] = new List<object>();
+                    else
+                        current.Add(new Dictionary<string, object>());
+                }
+               
 
                 current = current[currentLeg];
             }
-
+            } catch (Exception e)
+            {
+                Console.WriteLine(e);
+            }
             return current;
         }
 
@@ -93,8 +108,19 @@ namespace LightWeightOverlay
             var splits = path.Split("/");
             var lastLeg = splits[splits.Length - 1];
             //basically
-            var parent = RetrievePath(path, true, true) as IDictionary<string, object>;
-            parent[lastLeg] = value;
+            dynamic parent = RetrievePath(path, true, true);
+            if (parent is List<object>)
+            {
+                var intLeg = int.Parse(lastLeg);
+                for (int i = parent.Count; i <= intLeg; i++)
+                {
+                    parent.Add(null);
+                }
+
+                parent[intLeg] = value;
+            }
+            else
+             parent[lastLeg] = value;
 
             return new Message() { Path = path, Content = JsonConvert.SerializeObject(value), Type = "Update" }; ;
         }
