@@ -370,8 +370,9 @@ function UpdatePB(){
   var myTeamBanActions = GetTeamActions(true, "ban")
   var theirTeamBanActions = GetTeamActions(false, "ban")
 
-  _S.myTeamBanCount = myTeamBanActions.length
-  _S.theirTeamBanCount = theirTeamBanActions.length
+
+  _S.myTeamBanCount = myTeamBanActions.filter(x => x.completed).length
+  _S.theirTeamBanCount = theirTeamBanActions.filter(x => x.completed).length
 
   for(var i = 0; i < 5; i++){
       UpdatePick(i, myTeamId, myTeam, inProgress)
@@ -415,7 +416,7 @@ function GetSummonerName(summonerId, cellId){
 }
 
 function SetLayout(type, phase){
-  //console.log(type, phase)
+  console.log(type, phase)
   if (type == "header")
     SetClassLayout("header","", "", "")
   
