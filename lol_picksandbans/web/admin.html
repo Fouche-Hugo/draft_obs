@@ -6,14 +6,15 @@
     <link rel="stylesheet" type="text/css" href="admin.css" media="screen" />
 </head>
 
-    
 <body >
     <div class="header">
       <div template="{class=teaminfo side=left}"></div>
       <div class="phaseinfo">
         <div class="matchinfo" contenteditable="true" bind="{attribute=innerHTML path=admin/matchInfo out=input}"></div>
         <div class="patchinfo" contenteditable="true" bind="{attribute=innerHTML path=admin/patchInfo out=input}"></div>
-        <div class="countdown"></div>
+        <div class="countdown">
+            <select class="version-select" bind="{attribute=value path=admin/version out=change}"></select>
+        </div>
         <div class="phase-title"></div>
         <div class="flex-spacer"></div>
       </div>
@@ -36,7 +37,7 @@
         <div template="{class=pick team=2 slot=4}"></div>
     </div>
 
-    <div class="left bans">
+    <div class="left bans gone">
         <div class="ban"></div>
         <div class="ban"></div>
         <div class="ban"></div>
@@ -44,7 +45,7 @@
         <div class="ban"></div>
     </div>
 
-    <div class="right bans">
+    <div class="right bans gone">
         <div class="ban"></div>
         <div class="ban"></div>
         <div class="ban"></div>
@@ -54,18 +55,19 @@
 
     <div id="templates" style="display: none" >
         <div class="pick after-initial">
-                <div class="pick-text">
-                    <select class="role-select" bind="{attribute=value path=admin/positions/{team}/{slot} out=change}">
-                        <option value="top">Toplane</option>
-                        <option value="bottom">Botlane</option>
-                        <option value="jungle">Jungle</option>
-                        <option value="middle">Midlane</option>    
-                        <option value="utility">Support</option>        
-                        <option value="auto">Auto</option>                 
-                    </select>
-                    <p class="pick-champ"></p>
-                    <p class="pick-player"></p>
-                </div>
+            <div class="pick-text">
+                <select class="role-select" bind="{attribute=value path=admin/champion out=change}">
+                    <option value="top">Toplane</option>
+                    <option value="bottom">Botlane</option>
+                    <option value="jungle">Jungle</option>
+                    <option value="middle">Midlane</option>
+                    <option value="utility">Support</option>
+                    <option value="auto">Auto</option>
+                </select>
+
+                <p class="pick-champ"></p>
+                <p class="pick-player"></p>
+            </div>
                 <div class="display"></div>
         </div>
     

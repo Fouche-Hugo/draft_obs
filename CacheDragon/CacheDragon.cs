@@ -12,7 +12,7 @@ namespace CacheDragon
     public class Dragon : AApplication
     {
 
-        private static String _cDragonBaseUrl = "https://cdn.communitydragon.org/latest/";
+        private static String _cDragonBaseUrl = "https://ddragon.leagueoflegends.com/cdn/";
         private static String path = "/assets/cdragon/";
         private static Regex _cdragonRegex = new Regex($"^{path}");
         //private static Regex _cdragonRegex = new Regex($"^/{path}/");

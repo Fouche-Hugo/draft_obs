@@ -4,7 +4,16 @@ var States = ["gone"]
 
 var lolv = "10.4.1"
 
-var champData = () => _S.lolChampionData
+var championsById = {}
+var championsByIndex = []
+
+function adminData() {
+    if (!_S.lolChampSelect.admin)
+        _S.lolChampSelect.admin = {}
+
+    return _S.lolChampSelect.admin;
+}
+
 
 _S.picks = {1: [], 2: []}
 _S.bans = {1: [], 2: []}
@@ -32,6 +41,21 @@ function Log(...arr){
   console.log(arr)
 }
 
+function UpdateChampionData() {
+    Log("/assets/cdragon/" + adminData().version + "/data/en_US/championFull.json")
+    fetch("/assets/cdragon/" + adminData().version + "/data/en_US/championFull.json")
+        .then(res => res.json())
+        .then((out) => {
+            championMap = out.data;
+            
+            for (var k in championMap) {
+                championsById[championMap[k].key] = championMap[k]
+                championsByIndex.push(championMap[k])
+            }
+        })
+}
+
+
 // Connection opened
 socket.addEventListener('open', function (event) {
     SendMessage("Subscribe","lolChampionData")
@@ -55,15 +79,17 @@ function SetClassLayout(elementClass, layout, locat, state, time){
 // Listen for messages
 socket.addEventListener('message', function (event) {
   var message = JSON.parse(event.data);
-  
+  console.log(message)
   if (message.Type == "Update"){
 
     StateOnUpdate(message)
     
     if (!initDone && message.Path == "lolChampionData"){
-      Main();
+        Main();
     } else if (message.Path == "lolChampSelect/session") {
       UpdatePB();
+      } else if (message.Path == "lolChampSelect/admin" ) {
+        UpdateChampionData()
     }
 
   }
@@ -225,8 +251,8 @@ function UpdateBan(i, teamid, action){
       backgroundColor: null,
       backgroundImage: null
     }
-  } else if (action.isInProgress){
-    var champ = action.championId > 0 ? champData().byId[action.championId]  : null 
+  } else if (action.isInProgress) {
+      var champ = action.championId > 0 ? championsById[action.championId] : null
     
     slot.style = {
       opacity: 0.8,
@@ -234,7 +260,7 @@ function UpdateBan(i, teamid, action){
       backgroundImage:  champ == null ? null : "url("+GenerateSquareArtUrl(champ.id)+")",
     }   
   } else{
-    var champ = action.championId > 0 ? champData().byId[action.championId]  : null 
+      var champ = action.championId > 0 ? championsById[action.championId]  : null
     
     slot.style = {
       opacity: 1,
@@ -246,48 +272,6 @@ function UpdateBan(i, teamid, action){
   UpdatePath(null, "lolChampSelect/ban/"+teamid+"/"+i, slot) 
 
 }
-
-/*function UpdateBan(i, teamid, bans, inProgress, completed,firstId){
-  
-  var slot = _S.bans[teamid][i];
-  var member = bans[i]
-  var actionId = (teamid-1)*5+i+firstId;
-  var inProg = inProgress.filter((x) => x.id == actionId && x.type == "ban")
-  var complete = completed.filter((x) => x.id == actionId && x.type == "ban")
-  
-  if (inProg.length > 0){
-    
-    var inProgressAction = inProg[0]
-    
-    var champ = inProgressAction.championId > 0 ? champData().byId[inProgressAction.championId]  : null 
-    
-    slot.style = {
-      opacity: 0.8,
-      backgroundColor: champ == null ? (teamid == 1 ? "var(--team-left-color)" : "var(--team-right-color)") : null,
-      backgroundImage:  champ == null ? null : "url("+GenerateSquareArtUrl(champ.id)+")",
-    }       
-  }
-  else if (complete.length > 0){
-
-    var completeAction = complete[0]
-    
-    var champ = completeAction.championId > 0 ? champData().byId[completeAction.championId]  : null 
-    
-    slot.style = {
-      opacity: 1,
-      backgroundColor: champ == null ? (teamid == 1 ? "var(--team-left-color)" : "var(--team-right-color)") : null,
-      backgroundImage:  champ == null ? null : "url("+GenerateSquareArtUrl(champ.id)+")",
-    }    
-  } else {
-    slot.style = {
-      opacity: null,
-      backgroundColor: null,
-      backgroundImage: null
-    }
-  }
-  
-  UpdatePath(null, "lolChampSelect/ban/"+teamid+"/"+i, slot) 
-}*/
 
 function UpdatePick(i, teamid, team, inProgress){
   var member = team[i]
@@ -303,17 +287,21 @@ function UpdatePick(i, teamid, team, inProgress){
     
     if (isInProgress.length > 0){
       var inProgressAction = isInProgress[0]
-      champ = inProgressAction.championId > 0 ? champData().byId[inProgressAction.championId]  : null
+        champ = inProgressAction.championId > 0 ? championsById[inProgressAction.championId]  : null
     }  else{
-      champ = member.championId > 0 ? champData().byId[member.championId]  : null
+        champ = member.championId > 0 ? championsById[member.championId]  : null
     }
     
-    var champName = member.championId > 0 ? champData().byId[member.championId].name : null
+      var champName = member.championId > 0 ? championsById[member.championId].name : null
     
     var splashArtTransform = champ == null ? null :_S.lolChampionData.splash.horizontal[champ.id]
-    
-    slot.flex = inProgressAction ? "3" : null
 
+    if (splashArtTransform == null) {
+          splashArtTransform = _S.lolChampionData.splash.horizontal["Ahri"]
+    }
+
+    slot.flex = inProgressAction ? "3" : null
+    
     slot.style = {
       opacity: inProgressAction ? 0.8 : 1,
       backgroundColor: inProgressAction && champ == null ? (member.team == 1 ? "var(--team-left-color)" : "var(--team-right-color)") : null,
@@ -395,12 +383,18 @@ function UpdatePB(){
 }
 
 //#region DataContext
-function GenerateSplashArtUrl(championId){
-  return "/assets/cdragon/champion/"+championId+"/splash-art/centered";
+function GenerateSplashArtUrl(championId) {
+    if (championId == "Fiddlesticks")
+        return "/assets/cdragon/img/champion/centered/FiddleSticks_0.jpg";
+    else
+        return "/assets/cdragon/img/champion/centered/" + championId + "_0.jpg";
 }
 
-function GenerateSquareArtUrl(championId){
-  return "/assets/cdragon/champion/"+championId+"/square.png"
+function GenerateSquareArtUrl(championId) {
+    if (championId == "Fiddlesticks")
+        return "/assets/cdragon/img/champion/tiles/FiddleSticks_0.jpg"
+    else
+        return "/assets/cdragon/img/champion/tiles/" + championId + "_0.jpg"
 }
 
 function GetSummonerName(summonerId, cellId){
@@ -477,32 +471,12 @@ function preloadImage(CreationFunc, id){
     preloadImage(CreationFunc, id)
   }
  
-  if (id < champData().byIndex.length){
+    if (id < championsByIndex.length){
     splashPreloader.addEventListener('load', onload)
-    splashPreloader.src = CreationFunc(champData().byIndex[id].id)
+      splashPreloader.src = CreationFunc(championsByIndex[id].id)
     
   };
 }
-
-function UpdateChampionData(){
-  fetch("http://ddragon.leagueoflegends.com/cdn/"+lolv+"/data/en_US/champion.json")
-  .then(res => res.json())
-  .then((out) => {
-    var championMap = champData().byKey;
-    var championsByIndex = champData().byIndex;
-    var championsById = champData().byId;
-    
-    championMap = out.data;
-    for (var k in championMap){
-      championsById[championMap[k].key] = championMap[k]
-      championsByIndex.push(championMap[k])
-    }
-    SendMessage("Update",championsById, "lolChampionData/byId")
-    SendMessage("Update",championMap, "lolChampionData/byKey")
-    SendMessage("Update",championsByIndex, "lolChampionData/byIndex")
-  })
-}
-
 
 
 function layoutConverter(){
@@ -550,10 +524,10 @@ function Main(){
   preloadImage(GenerateSplashArtUrl, 0);
   preloadImage(GenerateSquareArtUrl, 0);
 
-
+  SendMessage("Subscribe", "lolChampSelect/admin")
   SendMessage("Subscribe","lolChampSelect/session")
   SendMessage("Subscribe","lolChampSelect/summoners")
-  SendMessage("Subscribe","lolChampSelect/admin")
+  
   initDone = true;
 }
 
