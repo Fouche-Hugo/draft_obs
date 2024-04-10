@@ -22,6 +22,7 @@ _S.banElements = {1: [], 2: []}
 
 _S.myTeamBanCount = 0
 _S.theirTeamBanCount = 0
+_S.version = "14.7.1"
 
 var initDone = false;
 var epoch = 0;
@@ -42,8 +43,8 @@ function Log(...arr){
 }
 
 function UpdateChampionData() {
-    Log("/assets/cdragon/" + adminData().version + "/data/en_US/championFull.json")
-    fetch("/assets/cdragon/" + adminData().version + "/data/en_US/championFull.json")
+    Log("assets/cdragon/" + adminData().version + "/data/en_US/championFull.json")
+    fetch("assets/cdragon/" + adminData().version + "/data/en_US/championFull.json")
         .then(res => res.json())
         .then((out) => {
             championMap = out.data;
@@ -398,7 +399,10 @@ function GenerateSquareArtUrl(championId) {
 }
 
 function GetSummonerName(summonerId, cellId){
-  var summonerMap = _S.lolChampSelect.summoners;
+    var summonerMap = _S.lolChampSelect.summoners;
+    console.log("test");
+    console.log(summonerMap);
+    console.log("test2");
   
   if (summonerMap == null)
     return "N/A"

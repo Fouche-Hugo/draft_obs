@@ -339,3 +339,5 @@ ASALocalRun/
 # BeatPulse healthcheck temp database
 healthchecksdb
 /CacheDragon/cache/cdragon/champion
+
+**/lol_picksandbans/web/assets/cdragon/**
