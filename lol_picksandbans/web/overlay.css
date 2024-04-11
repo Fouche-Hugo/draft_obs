@@ -9,26 +9,22 @@
 } 
 
 @font-face {
-    font-family: 'tgl_0-1451_engschriftregular';
-    src: url('assets/fonts/tgl_0-1451eng-webfont.woff2') format('woff2'),
-         url('assets/fonts/tgl_0-1451eng-webfont.woff') format('woff');
-    font-weight: normal;
-    font-style: normal;
-
+  font-family: "Thunder-ExtraBoldLC";
+  src: url("E:/perso/hmt/ouatligue/code/font/thunderfont/Thunder-ExtraBoldLC.otf");
+  font-weight: normal;
+  font-style: normal;
 }
 
 header { border:1px black solid; }
 
 body {
-  
-  font-family: 'tgl_0-1451_engschriftregular';
-  font-weight:normal;
-  font-style:normal;  
-  
-  height: 1080px; 
-  width: 1920px;  
-  background-color: rgba(0, 0, 0, 0); 
-  overflow: hidden; 
+  font-family: "Thunder-ExtraBoldLC";
+  font-weight: normal;
+  font-style: normal;
+  height: 1080px;
+  width: 1920px;
+  background-color: rgba(0, 0, 0, 0);
+  overflow: hidden;
 }
 
 body *{
@@ -152,12 +148,12 @@ body *{
   top: 1px;
 }
 
-.teaminfo-right{
-  background-color: var(--team-right-color);
+.teaminfo-right {
+  background-image: linear-gradient(-34deg, #BD0A0A 0%, #7A0000 15%, #000000 60%);
 }
 
-.teaminfo-left{
-  background-color: var(--team-left-color);
+.teaminfo-left {
+  background-image: linear-gradient(34deg, #2514E1 0%, #130A71 15%, #000000 60%);
 }
 
 .teaminfo *{
