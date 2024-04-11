@@ -37,8 +37,10 @@ def extract_and_move_files(version):
         tar.extractall(f"dragontail/")
         print(f"Extracted files from {tar_file}")
 
+    current_directory = os.path.dirname(os.path.abspath(__file__))
+
     src_folder = f"dragontail/img/champion/centered"
-    dest_folder = "lol_picksandbans/web/assets/cdragon/img/champion/centered"
+    dest_folder = os.path.join(current_directory, "lol_picksandbans/web/assets/cdragon/img/champion/centered")
     if not os.path.exists(dest_folder):
         os.makedirs(dest_folder)
     for file in os.listdir(src_folder):
@@ -47,7 +49,7 @@ def extract_and_move_files(version):
         shutil.move(src_path, dest_path)
     
     src_folder = f"dragontail/img/champion/tiles"
-    dest_folder = "lol_picksandbans/web/assets/cdragon/img/champion/tiles"
+    dest_folder = os.path.join(current_directory, "lol_picksandbans/web/assets/cdragon/img/champion/tiles")
     if not os.path.exists(dest_folder):
         os.makedirs(dest_folder)
     for file in os.listdir(src_folder):
@@ -55,15 +57,30 @@ def extract_and_move_files(version):
         dest_path = os.path.join(dest_folder, file)
         shutil.move(src_path, dest_path)
     
-    src_path = f"dragontail/14.7.1/data/en_US/championFull.json"
-    dest_folder = "lol_picksandbans/web/assets/cdragon/14.7.1/data/en_US"
-    dest_path = f"{dest_folder}/championFull.json"
+    src_path = f"dragontail/{version}/data/en_US/championFull.json"
+    dest_folder = os.path.join(current_directory, "lol_picksandbans/web/assets/cdragon/14.7.1/data/en_US")
+    dest_path = os.path.join(dest_folder, "championFull.json")
     if not os.path.exists(dest_folder):
         os.makedirs(dest_folder)
     shutil.move(src_path, dest_path)
     print(f"Moved files to lol_picksandbans/web/assets/cdragon")
 
+    # Copying files to release/apps/lol_picksandbans
+    release_dir = os.path.join(current_directory, "release/apps/lol_picksandbans/web/assets/cdragon")
+    if not os.path.exists(release_dir):
+        os.makedirs(release_dir)
+    
+    shutil.copytree(os.path.join(current_directory, "lol_picksandbans/web/assets/cdragon"), os.path.join(release_dir, "lol_picksandbans"))
+    print(f"Copied files to {release_dir}")
+
+def extract_and_move_release_files():
+    tar_file = f"release.tar.gz"
+    with tarfile.open(tar_file, "r:gz") as tar:
+        tar.extractall()
+        print(f"Extracted files from {tar_file}")
+
 def main():
+    extract_and_move_release_files()
     latest_version = get_latest_ddragon_version()
     if latest_version:
         print(f"Latest Data Dragon version: {latest_version}")
