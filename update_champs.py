@@ -54,7 +54,14 @@ def extract_and_move_files(version):
         src_path = os.path.join(src_folder, file)
         dest_path = os.path.join(dest_folder, file)
         shutil.move(src_path, dest_path)
-    print(f"Moved files to {dest_folder}")
+    
+    src_path = f"dragontail/14.7.1/data/en_US/championFull.json"
+    dest_folder = "lol_picksandbans/web/assets/cdragon/14.7.1/data/en_US"
+    dest_path = f"{dest_folder}/championFull.json"
+    if not os.path.exists(dest_folder):
+        os.makedirs(dest_folder)
+    shutil.move(src_path, dest_path)
+    print(f"Moved files to lol_picksandbans/web/assets/cdragon")
 
 def main():
     latest_version = get_latest_ddragon_version()
