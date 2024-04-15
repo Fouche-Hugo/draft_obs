@@ -43,7 +43,16 @@ function Log(...arr){
 }
 
 function UpdateChampionData() {
-    Log("assets/cdragon/" + adminData().version + "/data/en_US/championFull.json")
+  let version = adminData().version
+    Log("assets/cdragon/" + version + "/data/en_US/championFull.json")
+    
+    // if adminData().version is undefined, fetch the most recent version
+    if (!version) {
+    fetch("https://ddragon.leagueoflegends.com/api/versions.json").then(res => res.json()).then((out) => {
+      version = out[0]
+    })
+  }
+
     fetch("assets/cdragon/" + adminData().version + "/data/en_US/championFull.json")
         .then(res => res.json())
         .then((out) => {

@@ -5,7 +5,7 @@ app = Flask(__name__)
 
 @app.route('/')
 def home():
-    return "Bienvenue sur le serveur local!"
+    return send_from_directory('', 'admin.html')
 
 @app.route('/<path:path>')
 def serve_file_in_dir(path):

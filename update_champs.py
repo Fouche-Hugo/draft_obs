@@ -70,7 +70,7 @@ def extract_and_move_files(version):
     if not os.path.exists(release_dir):
         os.makedirs(release_dir)
     
-    shutil.copytree(os.path.join(current_directory, "lol_picksandbans/web/assets/cdragon"), os.path.join(release_dir, "lol_picksandbans"))
+    shutil.copytree(os.path.join(current_directory, "lol_picksandbans/web/assets/cdragon"), release_dir, dirs_exist_ok=True)
     print(f"Copied files to {release_dir}")
 
 def extract_and_move_release_files():
