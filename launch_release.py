@@ -1,7 +1,7 @@
 import subprocess
 
 # Définir les commandes à exécuter
-python_command = "cd lol_picksandbans/web && python server.py"
+python_command = "cd release/apps/lol_picksandbans/web && python server.py"
 dotnet_command = "cd release && dotnet LWOServer.dll"
 
 # Lancer les deux commandes en parallèle
